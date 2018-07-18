@@ -1,0 +1,1 @@
+https://github.com/MicrosoftDocs/azure-docs/issues/6502https://stackoverflow.com/questions/49586292/exception-in-uwp-app-on-using-microsoft-azure-devices-client
