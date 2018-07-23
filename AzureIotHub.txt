@@ -1,1 +1,4 @@
 https://stackoverflow.com/questions/45006986/how-can-i-receive-from-azure-iot-hub-messages-sent-by-devices
+
+https://mtaulty.com/2016/10/25/windows-10-uwp-unity-and-adding-a-reference-to-a-uwp-class-library/
+
