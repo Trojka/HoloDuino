@@ -88,7 +88,7 @@ namespace ReadFromHub
                 tasks.Add(ReceiveMessagesFromDeviceAsync(partition, cts.Token));
             }
 
-            // Wait for all the PartitionReceivers to finsih.
+            // Wait for all the PartitionReceivers to finish.
             Task.WaitAll(tasks.ToArray());
         }
     }
