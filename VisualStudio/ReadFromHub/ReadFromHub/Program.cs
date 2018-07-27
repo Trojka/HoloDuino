@@ -9,6 +9,21 @@ namespace ReadFromHub
 {
     class Program
     {
+        private static EventHubClient s_eventHubClient;
+
+
+        // Event Hub-compatible endpoint
+        //// az iot hub show --query properties.eventHubEndpoints.events.endpoint --name {your IoT Hub name}
+        //private readonly static string s_eventHubsCompatibleEndpoint = "";
+
+        //// Event Hub-compatible name
+        //// az iot hub show --query properties.eventHubEndpoints.events.path --name {your IoT Hub name}
+        //private readonly static string s_eventHubsCompatiblePath = "";
+
+        //// az iot hub policy show --name iothubowner --query primaryKey --hub-name {your IoT Hub name}
+        //private readonly static string s_iotHubSasKey = "";
+        //private readonly static string s_iotHubSasKeyName = "";
+
         // Event Hub-compatible endpoint
         // az iot hub show --query properties.eventHubEndpoints.events.endpoint --name {your IoT Hub name}
         private readonly static string s_eventHubsCompatibleEndpoint = "";
@@ -20,7 +35,6 @@ namespace ReadFromHub
         // az iot hub policy show --name iothubowner --query primaryKey --hub-name {your IoT Hub name}
         private readonly static string s_iotHubSasKey = "";
         private readonly static string s_iotHubSasKeyName = "";
-        private static EventHubClient s_eventHubClient;
 
         // Asynchronously create a PartitionReceiver for a partition and then start 
         // reading any messages sent from the simulated client.

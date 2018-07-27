@@ -13,6 +13,7 @@ namespace SendToHub
         // The device connection string to authenticate the device with your IoT hub.
         // Using the Azure CLI:
         // az iot hub device-identity show-connection-string --hub-name {YourIoTHubName} --device-id MyDotnetDevice --output table
+        //private readonly static string s_connectionString = "";
         private readonly static string s_connectionString = "";
 
         // Async method to send simulated telemetry
@@ -53,7 +54,7 @@ namespace SendToHub
             Console.WriteLine("IoT Hub Quickstarts #1 - Simulated device. Ctrl-C to exit.\n");
 
             // Connect to the IoT hub using the MQTT protocol
-            s_deviceClient = DeviceClient.CreateFromConnectionString(s_connectionString, TransportType.Mqtt);
+            s_deviceClient = DeviceClient.CreateFromConnectionString(s_connectionString, TransportType.Amqp);
             SendDeviceToCloudMessagesAsync();
             Console.ReadLine();
         }
