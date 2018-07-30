@@ -33,13 +33,18 @@ namespace ReadItApp
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            cts.Cancel();
+            ReadItLib.ReadIt.Stop();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            cts = new CancellationTokenSource();
-            ReadItLib.ReadIt.GetAll(cts);
+            ReadItLib.ReadIt.Start(this.ShowEvent);
+        }
+
+        private async void ShowEvent (string theEvent) {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => {
+                TheEventDisplay.Text = theEvent;
+            });
         }
     }
 }

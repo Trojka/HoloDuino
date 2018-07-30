@@ -108,6 +108,7 @@
   <ItemGroup>
     <Compile Include="ReadIt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReadIt.Secrets.cs" />
     <EmbeddedResource Include="Properties\ReadItLib.rd.xml" />
   </ItemGroup>
   <ItemGroup>

@@ -10,13 +10,8 @@ using System.Threading.Tasks;
 
 namespace ReadItLib
 {
-    public static class ReadIt
+    public static partial class ReadIt
     {
-        //public static string GetValue()
-        //{
-        //    return "The value";
-        //}
-
         private static bool _stopProcessing;
         private static int _maxRead = 20;
 
@@ -47,50 +42,78 @@ namespace ReadItLib
 
         //static string ConnectionString = "Endpoint=[EVENT_HUB_COMPATIBLE_ENDPOINT];SharedAccessKeyName=[IOT_HUB_POLICY_NAME];SharedAccessKey=[IOT_HUB_POLICY_KEY]";
         //static string eventHubEntity = "[EVENT_HUB_COMPATIBLE_NAME]";
-        //static string partitionId = "[PARTIION_ID]";
-        static string ConnectionString = "";
-        static string eventHubEntity = "";
-        static string partitionId0 = "";
-        static string partitionId1 = "";
+        //static List<string> PartitionIds = new List<string>() { "[PARTIION_ID_1]", ... };
         //static DateTime startingDateTimeUtc;
 
+        static MessagingFactory factory;
         static EventHubClient client;
         static EventHubConsumerGroup group;
 
-        public static void GetAll(CancellationTokenSource cts)
+        static List<EventHubReceiver> receiverList;
+
+        static CancellationTokenSource cts;
+
+        public static async Task Start(Action<string> processEvent)
+        {
+            cts = new CancellationTokenSource();
+            receiverList = new List<EventHubReceiver>();
+            await GetAll(processEvent, cts);
+        }
+
+        public static void Stop()
+        {
+            cts.Cancel();
+
+            receiverList.ForEach(r => r.Close());
+            client.Close();
+            factory.Close();
+        }
+
+
+        public static async Task GetAll(Action<string> processEvent, CancellationTokenSource cts)
         {
             //ServiceBusConnectionStringBuilder builder = new ServiceBusConnectionStringBuilder(ConnectionString);
             //builder.TransportType = TransportType.Amqp;
 
-            MessagingFactory factory = MessagingFactory.CreateFromConnectionString(ConnectionString);
+            Action<string> eventAction = processEvent;
+
+            factory = MessagingFactory.CreateFromConnectionString(ConnectionString);
 
             client = factory.CreateEventHubClient(eventHubEntity);
             group = client.GetDefaultConsumerGroup();
 
             var tasks = new List<Task>();
-            foreach (string partition in new List<string>(){ "0", "1"})
+            foreach (string partition in PartitionIds)
             {
-                tasks.Add(ReceiveMessagesFromDeviceAsync(partition, cts.Token));
+                tasks.Add(Task.Run(() => ReceiveMessagesFromDeviceAsync(partition, eventAction, cts.Token)));
             }
 
             // Wait for all the PartitionReceivers to finish.
-            Task.WaitAll(tasks.ToArray());
-
-            client.Close();
-            factory.Close();
+            await Task.WhenAll(tasks.ToArray());
         }
 
-        private static async Task ReceiveMessagesFromDeviceAsync(string partition, CancellationToken ct)
+        private static async Task ReceiveMessagesFromDeviceAsync(string partition, Action<string> processEvent, CancellationToken ct)
         {
             DateTime startingDateTimeUtc = DateTime.Now;
             EventHubReceiver receiver0 = group.CreateReceiver(partition, startingDateTimeUtc);
+
+            receiverList.Add(receiver0);
 
             while (true)
             {
                 if (ct.IsCancellationRequested) break;
 
-                EventData data = receiver0.Receive();
-                Debug.WriteLine("{0} {1} {2}", data.PartitionKey, data.EnqueuedTimeUtc.ToLocalTime(), Encoding.UTF8.GetString(data.GetBytes()));
+                if(!receiver0.IsClosed)
+                {
+                    EventData data = receiver0.Receive();
+
+                    string theEvent = Encoding.UTF8.GetString(data.GetBytes());
+
+                    processEvent(theEvent);
+                    Debug.WriteLine("{0} {1} {2}", data.PartitionKey, data.EnqueuedTimeUtc.ToLocalTime(), theEvent);
+                }
+
+                await Task.Delay(2000);
             }
         }
     }

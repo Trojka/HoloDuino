@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace ReadFromHub
 {
-    class Program
+    partial class Program
     {
         private static EventHubClient s_eventHubClient;
 
@@ -23,18 +23,6 @@ namespace ReadFromHub
         //// az iot hub policy show --name iothubowner --query primaryKey --hub-name {your IoT Hub name}
         //private readonly static string s_iotHubSasKey = "";
         //private readonly static string s_iotHubSasKeyName = "";
-
-        // Event Hub-compatible endpoint
-        // az iot hub show --query properties.eventHubEndpoints.events.endpoint --name {your IoT Hub name}
-        private readonly static string s_eventHubsCompatibleEndpoint = "";
-
-        // Event Hub-compatible name
-        // az iot hub show --query properties.eventHubEndpoints.events.path --name {your IoT Hub name}
-        private readonly static string s_eventHubsCompatiblePath = "";
-
-        // az iot hub policy show --name iothubowner --query primaryKey --hub-name {your IoT Hub name}
-        private readonly static string s_iotHubSasKey = "";
-        private readonly static string s_iotHubSasKeyName = "";
 
         // Asynchronously create a PartitionReceiver for a partition and then start 
         // reading any messages sent from the simulated client.

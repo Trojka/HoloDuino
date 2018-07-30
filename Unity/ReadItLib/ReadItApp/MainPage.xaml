@@ -11,6 +11,7 @@
     <Grid HorizontalAlignment="Stretch" Margin="0,0,609,607" VerticalAlignment="Stretch">
         <Button Content="End" HorizontalAlignment="Left" Margin="10,77,0,0" VerticalAlignment="Top" Click="Button_Click" Height="38" Width="65"/>
         <Button Content="Start" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" RenderTransformOrigin="-6.179,-4.862" Width="65" Click="Button_Click_1"/>
+        <TextBlock x:Name="TheEventDisplay" HorizontalAlignment="Left" Margin="97,40,0,0" Text="TextBlock" TextWrapping="Wrap" VerticalAlignment="Top" Height="31" Width="460"/>
 
     </Grid>
 </Page>
