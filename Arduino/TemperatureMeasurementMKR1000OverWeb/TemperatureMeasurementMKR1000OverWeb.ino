@@ -27,6 +27,8 @@
 
 int keyIndex = 0;                 // your network key Index number (needed only for WEP)
 
+const int SensorPin = A0;
+
 int status = WL_IDLE_STATUS;
 
 WiFiServer server(80);
@@ -90,14 +92,38 @@ void loop() {
           client.println("<!DOCTYPE HTML>");
           client.println("<html>");
           // output the value of each analog input pin
-          for (int analogChannel = 0; analogChannel < 6; analogChannel++) {
-            int sensorReading = analogRead(analogChannel);
-            client.print("analog input ");
-            client.print(analogChannel);
-            client.print(" is ");
-            client.print(sensorReading);
+
+
+          int sensorValue = analogRead(SensorPin);
+        
+          Serial.print("Sensor Value: ");
+          Serial.print(sensorValue);
+          //Serial.println();
+        
+          float voltage = (sensorValue/1024.0) * 3.3;
+        
+          Serial.print(", Volts: ");
+          Serial.print(voltage);
+          //Serial.println();
+        
+          float temperature = (voltage - .5) * 100;
+        
+          Serial.print(", degrees C: ");
+          Serial.print(temperature);
+          Serial.println();
+
+
+          
+          //for (int analogChannel = 0; analogChannel < 6; analogChannel++) {
+            //int sensorReading = analogRead(analogChannel);
+            client.print("Sensor Value: ");
+            client.print(sensorValue);
+            client.print(", Volts: ");
+            client.print(voltage);
+            client.print(", degrees C: ");
+            client.print(temperature);
             client.println("<br />");
-          }
+          //}
           client.println("</html>");
           break;
         }
@@ -118,6 +144,7 @@ void loop() {
     Serial.println("client disonnected");
   }
 }
+
 
 
 void printWifiStatus() {
