@@ -1,11 +1,17 @@
+#include <WiFi101.h>
 #include <AzureIoTHub.h>
 #include <AzureIoTProtocol_MQTT.h>
 
+#include "Iot.Secrets.h"
 #include "SendToSerial.h"
 #include "SendToAzure.h"
+#include "samd/sample_init.h"
+
+static char ssid[] = IOT_CONFIG_WIFI_SSID;
+static char pass[] = IOT_CONFIG_WIFI_PASSWORD;
 
 const int SensorPin = A0;
-const unsigned long SendEveryMilliSeconds = 10000;
+const unsigned long SendEveryMilliSeconds = 500;
 
 unsigned long currentTime;
 unsigned long lastMeasurementTime = 0;
@@ -15,8 +21,25 @@ float voltageValue;
 float temperatureValue;
 
 void setup() {
-  // put your setup code here, to run once:
 
+  sample_init(ssid, pass);
+  
+//    int status = WL_IDLE_STATUS;
+//    Serial.print("Attempting to connect to WPA SSID: ");
+//    Serial.println(ssid);
+//
+//    // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
+//    while ( status != WL_CONNECTED) 
+//    {
+//        // Connect to WPA/WPA2 network:
+//        status = WiFi.begin(ssid, pass);
+//        Serial.print("    WiFi status: ");
+//        Serial.println(status);
+//        // wait 2 seconds to try again
+//        delay(2000);
+//      }
+//
+//    Serial.println("\r\nConnected to wifi");
 }
 
 void loop() {
@@ -27,8 +50,9 @@ void loop() {
   if ((currentTime - lastMeasurementTime) > SendEveryMilliSeconds)
   {
     CalcTemperature(&sensorValue, &voltageValue, &temperatureValue);
-    SendToSerial(sensorValue, voltageValue, temperatureValue);
+    //SendToSerial(sensorValue, voltageValue, temperatureValue);
     SendToAzure(sensorValue, voltageValue, temperatureValue);
+    //SendToAzure(10, 20, 30);
     lastMeasurementTime = millis();
   }
   
