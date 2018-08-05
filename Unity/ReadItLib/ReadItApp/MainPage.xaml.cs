@@ -31,12 +31,12 @@ namespace ReadItApp
 
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Stop_Click(object sender, RoutedEventArgs e)
         {
             ReadItLib.ReadIt.Stop();
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void Button_Start_Click(object sender, RoutedEventArgs e)
         {
             ReadItLib.ReadIt.Start(this.ShowEvent);
         }

@@ -19,20 +19,23 @@ namespace SendToHub
         private static async void SendDeviceToCloudMessagesAsync()
         {
             // Initial telemetry values
+            int minSensorValue = 100;
             double minTemperature = 20;
-            double minHumidity = 60;
+            double minVoltage = 60;
             Random rand = new Random();
 
             while (true)
             {
+                int currentSensorValue = minSensorValue + rand.Next() * 150;
                 double currentTemperature = minTemperature + rand.NextDouble() * 15;
-                double currentHumidity = minHumidity + rand.NextDouble() * 20;
+                double currentVoltage = minVoltage + rand.NextDouble() * 20;
 
                 // Create JSON message
                 var telemetryDataPoint = new
                 {
-                    temperature = currentTemperature,
-                    humidity = currentHumidity
+                    SensorValue = currentSensorValue,
+                    Voltage = currentVoltage,
+                    Temperature = currentTemperature
                 };
                 var messageString = JsonConvert.SerializeObject(telemetryDataPoint);
                 var message = new Message(Encoding.ASCII.GetBytes(messageString));
