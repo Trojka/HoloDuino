@@ -1,4 +1,5 @@
-﻿using ppatierno.AzureSBLite;
+﻿using Microsoft.Azure.Devices;
+using ppatierno.AzureSBLite;
 using ppatierno.AzureSBLite.Messaging;
 using System;
 using System.Collections.Generic;
@@ -114,6 +115,27 @@ namespace ReadItLib
                 }
 
                 await Task.Delay(2000);
+            }
+        }
+
+
+        public static async Task updateDeviceIdsComboBoxes(bool runIfNullOrEmpty = true)
+        {
+            //if (!String.IsNullOrEmpty(activeIoTHubConnectionString) || runIfNullOrEmpty)
+            {
+                List<string> deviceIdsForEvent = new List<string>();
+                List<string> deviceIdsForC2DMessage = new List<string>();
+                List<string> deviceIdsForDeviceMethod = new List<string>();
+                RegistryManager registryManager = RegistryManager.CreateFromConnectionString(AzureIotConnectionString);
+
+                var devices = await registryManager.GetDevicesAsync(1000);
+                foreach (var device in devices)
+                {
+                    deviceIdsForEvent.Add(device.Id);
+                    deviceIdsForC2DMessage.Add(device.Id);
+                    deviceIdsForDeviceMethod.Add(device.Id);
+                }
+                await registryManager.CloseAsync();
             }
         }
     }
