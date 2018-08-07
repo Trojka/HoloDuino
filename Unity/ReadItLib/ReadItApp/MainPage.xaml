@@ -6,12 +6,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Height="194" Width="857">
 
-    <Grid HorizontalAlignment="Stretch" Margin="0,0,609,607" VerticalAlignment="Stretch">
+    <Grid Margin="0,0,0,0" HorizontalAlignment="Center" Height="174" VerticalAlignment="Center" Width="829">
         <Button Content="End" HorizontalAlignment="Left" Margin="10,77,0,0" VerticalAlignment="Top" Click="Button_Stop_Click" Height="38" Width="65"/>
         <Button Content="Start" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" RenderTransformOrigin="-6.179,-4.862" Width="65" Click="Button_Start_Click"/>
-        <TextBlock x:Name="TheEventDisplay" HorizontalAlignment="Left" Margin="97,40,0,0" Text="TextBlock" TextWrapping="Wrap" VerticalAlignment="Top" Height="31" Width="460"/>
+        <TextBlock x:Name="TheEventDisplay" HorizontalAlignment="Left" Margin="97,40,0,0" Text="TextBlock" TextWrapping="Wrap" VerticalAlignment="Top" Width="460" Height="31"/>
+        <TextBlock x:Name="DeviceListDisplay" HorizontalAlignment="Left" Margin="10,130,0,0" Text="TextBlock" TextWrapping="Wrap" VerticalAlignment="Top" Height="31" Width="533"/>
 
     </Grid>
 </Page>

@@ -1,7 +1,5 @@
 # Self Generated Libraries
-Amqp.Store.*
-AzureSBLite.WinRT.*
-ReadItLib.*
+Assets/Plugins/
 
 # User-specific files
 *.suo

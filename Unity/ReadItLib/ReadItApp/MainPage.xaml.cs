@@ -40,13 +40,20 @@ namespace ReadItApp
         {
             ReadItLib.ReadIt.Start(this.ShowEvent);
 
-            ReadItLib.ReadIt.updateDeviceIdsComboBoxes();
+            ReadItLib.ReadIt.updateDeviceIdsComboBoxes(this.ShowDevices);
 
         }
 
         private async void ShowEvent (string theEvent) {
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => {
                 TheEventDisplay.Text = theEvent;
+            });
+        }
+
+        private async void ShowDevices (bool ready, List<string> deviceIds)
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => {
+                DeviceListDisplay.Text = string.Join(",", deviceIds);
             });
         }
     }

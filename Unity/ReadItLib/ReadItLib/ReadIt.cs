@@ -13,39 +13,6 @@ namespace ReadItLib
 {
     public static partial class ReadIt
     {
-        private static bool _stopProcessing;
-        private static int _maxRead = 20;
-
-        public static async Task<int> StartProcessing(Action<string> action)
-        {
-            _stopProcessing = false;
-
-            int i = 0;
-
-            Random rnd = new Random();
-
-            while (!_stopProcessing && i < _maxRead)
-            {
-                int temp = rnd.Next(100);
-                action(temp.ToString());
-                i++;
-
-                await Task.Delay(1000);
-            }
-
-            return 0;
-        }
-
-        public static void StopProcessing()
-        {
-            _stopProcessing = true;
-        }
-
-        //static string ConnectionString = "Endpoint=[EVENT_HUB_COMPATIBLE_ENDPOINT];SharedAccessKeyName=[IOT_HUB_POLICY_NAME];SharedAccessKey=[IOT_HUB_POLICY_KEY]";
-        //static string eventHubEntity = "[EVENT_HUB_COMPATIBLE_NAME]";
-        //static List<string> PartitionIds = new List<string>() { "[PARTIION_ID_1]", ... };
-        //static DateTime startingDateTimeUtc;
-
         static MessagingFactory factory;
         static EventHubClient client;
         static EventHubConsumerGroup group;
@@ -73,9 +40,6 @@ namespace ReadItLib
 
         public static async Task GetAll(Action<string> processEvent, CancellationTokenSource cts)
         {
-            //ServiceBusConnectionStringBuilder builder = new ServiceBusConnectionStringBuilder(ConnectionString);
-            //builder.TransportType = TransportType.Amqp;
-
             Action<string> eventAction = processEvent;
 
             factory = MessagingFactory.CreateFromConnectionString(ConnectionString);
@@ -89,7 +53,6 @@ namespace ReadItLib
                 tasks.Add(Task.Run(() => ReceiveMessagesFromDeviceAsync(partition, eventAction, cts.Token)));
             }
 
-            // Wait for all the PartitionReceivers to finish.
             await Task.WhenAll(tasks.ToArray());
         }
 
@@ -111,32 +74,30 @@ namespace ReadItLib
                     string theEvent = Encoding.UTF8.GetString(data.GetBytes());
 
                     processEvent(theEvent);
-                    Debug.WriteLine("{0} {1} {2}", data.PartitionKey, data.EnqueuedTimeUtc.ToLocalTime(), theEvent);
+                    Debug.WriteLine($"{data.PartitionKey} {data.EnqueuedTimeUtc.ToLocalTime()} {theEvent}");
                 }
 
                 await Task.Delay(2000);
             }
         }
 
-
-        public static async Task updateDeviceIdsComboBoxes(bool runIfNullOrEmpty = true)
+        public static async Task updateDeviceIdsComboBoxes(Action<bool, List<string>> processList)
         {
-            //if (!String.IsNullOrEmpty(activeIoTHubConnectionString) || runIfNullOrEmpty)
-            {
-                List<string> deviceIdsForEvent = new List<string>();
-                List<string> deviceIdsForC2DMessage = new List<string>();
-                List<string> deviceIdsForDeviceMethod = new List<string>();
-                RegistryManager registryManager = RegistryManager.CreateFromConnectionString(AzureIotConnectionString);
+            List<string> deviceIds = new List<string>();
+            RegistryManager registryManager = RegistryManager.CreateFromConnectionString(AzureIotConnectionString);
 
-                var devices = await registryManager.GetDevicesAsync(1000);
-                foreach (var device in devices)
+            var query = registryManager.CreateQuery("SELECT * FROM devices", 100);
+            while (query.HasMoreResults)
+            {
+                var page = await query.GetNextAsTwinAsync();
+                foreach (var twin in page)
                 {
-                    deviceIdsForEvent.Add(device.Id);
-                    deviceIdsForC2DMessage.Add(device.Id);
-                    deviceIdsForDeviceMethod.Add(device.Id);
+                    deviceIds.Add(twin.DeviceId);
+                    Debug.WriteLine($"Twin: {twin.ToString()}");
                 }
-                await registryManager.CloseAsync();
             }
+
+            processList(true, deviceIds);
         }
     }
 }
