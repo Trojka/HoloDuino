@@ -227,6 +227,15 @@
     <Reference Include="UnityEngine.SpatialTracking">
       <HintPath>C:/Program Files/Unity2017.2/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll</HintPath>
     </Reference>
+    <Reference Include="Amqp.Store">
+      <HintPath>Assets/Plugins/Amqp.Store.dll</HintPath>
+    </Reference>
+    <Reference Include="AzureSBLite.WinRT">
+      <HintPath>Assets/Plugins/AzureSBLite.WinRT.dll</HintPath>
+    </Reference>
+    <Reference Include="ReadItLib">
+      <HintPath>Assets/Plugins/ReadItLib.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.Analytics">
       <HintPath>C:/Users/serge/AppData/LocalLow/Unity/cache/packages/packages.unity.com/com.unity.analytics@1.0.1/UnityEngine.Analytics.dll</HintPath>
     </Reference>

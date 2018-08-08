@@ -40,7 +40,7 @@ namespace ReadItApp
         {
             ReadItLib.ReadIt.Start(this.ShowEvent);
 
-            ReadItLib.ReadIt.updateDeviceIdsComboBoxes(this.ShowDevices);
+            //ReadItLib.ReadIt.updateDeviceIdsComboBoxes(this.ShowDevices);
 
         }
 
