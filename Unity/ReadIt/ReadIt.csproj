@@ -753,6 +753,7 @@
     <Compile Include="Assets\HoloToolkit\UX\Scripts\UsabilityScaler.cs" />
     <Compile Include="Assets\HoloToolkit\UX\Scripts\UsabilityUtilities.cs" />
     <Compile Include="Assets\Scripts\AwaitExtensions.cs" />
+    <Compile Include="Assets\Scripts\PanelManager.cs" />
     <Compile Include="Assets\Scripts\ShowTemperature.cs" />
     <Compile Include="Assets\Scripts\ShowTemperature.Secrets.cs" />
     <Compile Include="Assets\Scripts\WorldAnchors.cs" />
