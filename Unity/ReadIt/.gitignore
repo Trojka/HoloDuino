@@ -1,3 +1,6 @@
+# Secrets files
+*.Secrets.*
+
 # Self Generated Libraries
 Assets/Plugins/
 

@@ -1,4 +1,4 @@
-﻿using Microsoft.Azure.Devices;
+﻿//using Microsoft.Azure.Devices;
 using ppatierno.AzureSBLite;
 using ppatierno.AzureSBLite.Messaging;
 using System;
@@ -81,23 +81,23 @@ namespace ReadItLib
             }
         }
 
-        public static async Task updateDeviceIdsComboBoxes(Action<bool, List<string>> processList)
-        {
-            List<string> deviceIds = new List<string>();
-            RegistryManager registryManager = RegistryManager.CreateFromConnectionString(AzureIotConnectionString);
+        //public static async Task updateDeviceIdsComboBoxes(Action<bool, List<string>> processList)
+        //{
+        //    List<string> deviceIds = new List<string>();
+        //    RegistryManager registryManager = RegistryManager.CreateFromConnectionString(AzureIotConnectionString);
 
-            var query = registryManager.CreateQuery("SELECT * FROM devices", 100);
-            while (query.HasMoreResults)
-            {
-                var page = await query.GetNextAsTwinAsync();
-                foreach (var twin in page)
-                {
-                    deviceIds.Add(twin.DeviceId);
-                    Debug.WriteLine($"Twin: {twin.ToString()}");
-                }
-            }
+        //    var query = registryManager.CreateQuery("SELECT * FROM devices", 100);
+        //    while (query.HasMoreResults)
+        //    {
+        //        var page = await query.GetNextAsTwinAsync();
+        //        foreach (var twin in page)
+        //        {
+        //            deviceIds.Add(twin.DeviceId);
+        //            Debug.WriteLine($"Twin: {twin.ToString()}");
+        //        }
+        //    }
 
-            processList(true, deviceIds);
-        }
+        //    processList(true, deviceIds);
+        //}
     }
 }
