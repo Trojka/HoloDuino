@@ -4,6 +4,7 @@ using System.IO.Ports;
 using System.Linq;
 using System.Management;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,7 +26,15 @@ namespace WpfApp1
         public MainWindow()
         {
             InitializeComponent();
+
+            TxtWifiNtwrk.Text = WifiNetworkDefaultName;
+            TxtWifiPwd.Text = WifiPasswordDefaultName;
         }
+
+        bool sendedWifiNetworkToArduino = false;
+        bool arduinoReceivedWifiNetwork = false;
+        bool sendedWifiPasswordToArduino = false;
+        bool arduinoReceivedWifiPassword = false;
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -37,18 +46,39 @@ namespace WpfApp1
             port.Open();
             port.DataReceived += Port_DataReceived;
 
+            sendedWifiNetworkToArduino = true;
+            Console.WriteLine("Sending Wifi network.");
             port.WriteLine(TxtWifiNtwrk.Text);
+
+            while(!arduinoReceivedWifiNetwork)
+            {
+                Console.WriteLine("Waiting for Received Wifi network answer.");
+                Thread.Sleep(10);
+            }
+
+            sendedWifiPasswordToArduino = true;
+            Console.WriteLine("Sending Wifi password.");
             port.WriteLine(TxtWifiPwd.Text);
+
         }
 
         private void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            SerialPort spL = (SerialPort)sender;
-            //const int bufSize = 12;
-            //Byte[] buf = new Byte[bufSize];
-            //Console.WriteLine("DATA RECEIVED!");
-            //Console.WriteLine(spL.Read(buf, 0, bufSize));
-            Console.WriteLine(spL.ReadLine());
+            SerialPort port = (SerialPort)sender;
+            if (sendedWifiNetworkToArduino && !arduinoReceivedWifiNetwork)
+            {
+                Console.WriteLine("Received send Wifi network answer: " + port.ReadLine());
+                arduinoReceivedWifiNetwork = true;
+            }
+
+            if (arduinoReceivedWifiNetwork && sendedWifiPasswordToArduino && !arduinoReceivedWifiPassword)
+            {
+                Console.WriteLine("Received send Wifi password answer: " + port.ReadLine());
+                arduinoReceivedWifiPassword = true;
+            }
+
+            if(arduinoReceivedWifiNetwork && arduinoReceivedWifiPassword)
+                Console.WriteLine("Received: " + port.ReadLine());
         }
 
         // https://stackoverflow.com/questions/3293889/how-to-auto-detect-arduino-com-port

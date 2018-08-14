@@ -7,8 +7,8 @@
 #include "SendToAzure.h"
 #include "samd/sample_init.h"
 
-static char ssid[] = IOT_CONFIG_WIFI_SSID;
-static char pass[] = IOT_CONFIG_WIFI_PASSWORD;
+//static char ssid[] = IOT_CONFIG_WIFI_SSID;
+//static char pass[] = IOT_CONFIG_WIFI_PASSWORD;
 
 String ssidString;
 String passString;
@@ -74,34 +74,46 @@ void loop() {
 
     char receiveVal; 
     String receivedString;    
-     
+
+    bool receivedSomething = false;
     if(Serial.available() > 0)  
     {          
        receivedString = Serial.readString();
+       int indexOfR = receivedString.indexOf("\r");
+       //Serial.println("R[" + String(indexOfR) + "]");
+       receivedString.remove(indexOfR);
+       int indexOfN = receivedString.indexOf("\n");
+       //Serial.println("N[" + String(indexOfN) + "]");
+       receivedString.remove(indexOfN);
+       receivedSomething = true;
 
-       if(!receivedWifiNetwork && !receivedWifiPwd)
+       if(receivedSomething && !receivedWifiNetwork && !receivedWifiPwd)
        {
           //ssidString = new char [receivedString.length()+1];
           //strcpy (ssidString, receivedString.c_str());
           ssidString = receivedString;
+          //ssidString.remove(ssidString.indexOf("\n"));
 
           receivedWifiNetwork = true;
+          receivedSomething= false;
        }
 
-       if(receivedWifiNetwork && !receivedWifiPwd)
+       if(receivedSomething && receivedWifiNetwork && !receivedWifiPwd)
        {
           //passString = new char [receivedString.length()+1];
           //strcpy (passString, receivedString.c_str());
           passString = receivedString;
+          //passString.remove(passString.indexOf("\n"));
 
           receivedWifiPwd = true;
+          receivedSomething= false;
        }
        
        if(receivedWifiNetwork && receivedWifiPwd)      
           serialConnectLedState = HIGH;    
 
        digitalWrite(serialConnectLedPin, serialConnectLedState); 
-       Serial.println(receivedString);
+       Serial.println("Received [" + receivedString + "]");
        Serial.flush();
     }  
 
@@ -110,16 +122,17 @@ void loop() {
     {
         Serial.println("Not yet conected to WIFI");
         
-        Serial.println("WiFi " + String(ssid));
+        Serial.println("WiFi ntw: " + ssidString);
         //Serial.println(ssidString);
         Serial.flush();
 
-        Serial.print("WiFi pwd " + String(pass));
+        Serial.println("WiFi pwd: " + passString);
         //Serial.println(passString);
         Serial.flush();
         
         // Connect to WPA/WPA2 network:
-        status = WiFi.begin(ssid, pass);
+        //status = WiFi.begin(ssid, pass);
+        status = WiFi.begin(ssidString.c_str(), passString.c_str());
         Serial.println("WiFi status: " + ((status == WL_CONNECTED) ? String("connected") : String("not connected")));
         //Serial.println((status == WL_CONNECTED) ? "connected" : "not connected");
         Serial.flush();
