@@ -38,10 +38,11 @@ namespace ReadItApp
 
         private void Button_Start_Click(object sender, RoutedEventArgs e)
         {
-            ReadItLib.ReadIt.Start(this.ShowEvent);
+            //ReadItLib.ReadIt.Start(this.ShowEvent);
 
             //ReadItLib.ReadIt.updateDeviceIdsComboBoxes(this.ShowDevices);
 
+            ReadItLib.ReadIt.GetDevices();
         }
 
         private async void ShowEvent (string theEvent) {

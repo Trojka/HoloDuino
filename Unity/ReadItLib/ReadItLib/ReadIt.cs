@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -99,5 +101,30 @@ namespace ReadItLib
 
         //    processList(true, deviceIds);
         //}
+
+        public static async void GetDevices()
+        {
+ 
+            HttpClient client = new HttpClient();
+
+            //client.BaseAddress = new Uri(WebAPIEndpoint);
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("key", "=" + apiKey);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, WebAPIEndpoint);
+            request.Headers.Add("Authorization", WebAPIHeaderAuthorization);
+
+            request.Content = new StringContent("{\"query\":\"select * from devices\"}", Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await client.SendAsync(request);
+
+            //HttpResponseMessage response = await client.PostAsync(requestUrl, request.Content); //// (requestUrl, model);
+            //string responseBody = await response.Content.ReadAsStringAsync();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+
+        }
     }
 }
+

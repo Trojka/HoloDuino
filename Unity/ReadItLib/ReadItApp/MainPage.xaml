@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Height="194" Width="857">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Height="194" Width="854">
 
     <Grid Margin="0,0,0,0" HorizontalAlignment="Center" Height="174" VerticalAlignment="Center" Width="829">
         <Button Content="End" HorizontalAlignment="Left" Margin="10,77,0,0" VerticalAlignment="Top" Click="Button_Stop_Click" Height="38" Width="65"/>
