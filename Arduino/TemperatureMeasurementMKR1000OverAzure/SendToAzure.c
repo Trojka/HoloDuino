@@ -15,11 +15,29 @@ BEGIN_NAMESPACE(TempMeasurement);
 DECLARE_MODEL(Measurement,
 WITH_DATA(int, SensorValue),
 WITH_DATA(float, Voltage),
-WITH_DATA(float, Temperature)
+WITH_DATA(float, Temperature),
+WITH_ACTION(TurnLedOn),
+WITH_ACTION(TurnLedOff)
 );
 
 END_NAMESPACE(TempMeasurement);
 
+
+EXECUTE_COMMAND_RESULT TurnLedOn(Measurement* device)
+{
+    (void)device;
+    (void)printf("Turning LED on.\r\n");
+    digitalWrite(1, 1); 
+    return EXECUTE_COMMAND_SUCCESS;
+}
+
+EXECUTE_COMMAND_RESULT TurnLedOff(Measurement* device)
+{
+    (void)device;
+    (void)printf("Turning LED off.\r\n");
+    digitalWrite(1, 0); 
+    return EXECUTE_COMMAND_SUCCESS;
+}
 
 void sendCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* userContextCallback)
 {
@@ -138,17 +156,17 @@ void SendToAzure(int sensor, float voltage, float temperature) {
               someMeasurement->Temperature = temperature;
 
               {
-                unsigned char* destination;
-                size_t destinationSize;
-                if (SERIALIZE(&destination, &destinationSize, someMeasurement->SensorValue, someMeasurement->Voltage, someMeasurement->Temperature) != CODEFIRST_OK)
-                {
-                    printf("Failed to serialize\r\n");
-                }
-                else
-                {
-                    sendMessage(iotHubClientHandle, destination, destinationSize, someMeasurement);
-                    free(destination);
-                }
+//                unsigned char* destination;
+//                size_t destinationSize;
+//                if (SERIALIZE(&destination, &destinationSize, someMeasurement->SensorValue, someMeasurement->Voltage, someMeasurement->Temperature) != CODEFIRST_OK)
+//                {
+//                    printf("Failed to serialize\r\n");
+//                }
+//                else
+//                {
+//                    sendMessage(iotHubClientHandle, destination, destinationSize, someMeasurement);
+//                    free(destination);
+//                }
               }
 
 //              /* wait for commands */
@@ -159,9 +177,11 @@ void SendToAzure(int sensor, float voltage, float temperature) {
 //              }
 
                 IOTHUB_CLIENT_STATUS status;
-                
-                while ((IoTHubClient_LL_GetSendStatus(iotHubClientHandle, &status) == IOTHUB_CLIENT_OK) && (status == IOTHUB_CLIENT_SEND_STATUS_BUSY))
+
+                printf("Getting Send Status\r\n");
+                while (1) //(IoTHubClient_LL_GetSendStatus(iotHubClientHandle, &status) == IOTHUB_CLIENT_OK) && (status == IOTHUB_CLIENT_SEND_STATUS_BUSY))
                 {
+                    printf("Do Work\r\n");
                     IoTHubClient_LL_DoWork(iotHubClientHandle);
                     ThreadAPI_Sleep(100);
                 }              
