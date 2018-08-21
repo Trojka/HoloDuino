@@ -251,6 +251,15 @@
     <Reference Include="UnityEngine.StandardEvents">
       <HintPath>C:/Users/serge/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.10/UnityEngine.StandardEvents.dll</HintPath>
     </Reference>
+    <Reference Include="Amqp.Store">
+      <HintPath>Assets/Plugins/Amqp.Store.dll</HintPath>
+    </Reference>
+    <Reference Include="ReadItLib">
+      <HintPath>Assets/Plugins/ReadItLib.dll</HintPath>
+    </Reference>
+    <Reference Include="AzureSBLite.WinRT">
+      <HintPath>Assets/Plugins/AzureSBLite.WinRT.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\HoloToolkit\Boundary\Scripts\BoundaryManager.cs" />

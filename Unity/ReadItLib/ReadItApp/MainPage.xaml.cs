@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Amqp;
+using ReadItLib;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -36,14 +38,20 @@ namespace ReadItApp
             ReadItLib.ReadIt.Stop();
         }
 
+        bool toggle = true;
         private void Button_Start_Click(object sender, RoutedEventArgs e)
         {
-            //ReadItLib.ReadIt.Start(this.ShowEvent);
+                toggle = !toggle;
+                ActivateIt.ExecLedOn(toggle);
 
-            //ReadItLib.ReadIt.updateDeviceIdsComboBoxes(this.ShowDevices);
 
-            ReadItLib.ReadIt.GetDevices();
-        }
+
+                //ReadItLib.ReadIt.Start(this.ShowEvent);
+
+                //ReadItLib.ReadIt.updateDeviceIdsComboBoxes(this.ShowDevices);
+
+                //ReadItLib.ReadIt.GetDevices();
+            }
 
         private async void ShowEvent (string theEvent) {
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => {

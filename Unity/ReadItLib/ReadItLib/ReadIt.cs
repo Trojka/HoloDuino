@@ -1,5 +1,4 @@
 ﻿//using Microsoft.Azure.Devices;
-using ppatierno.AzureSBLite;
 using ppatierno.AzureSBLite.Messaging;
 using System;
 using System.Collections.Generic;

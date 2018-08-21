@@ -11,6 +11,8 @@ public class PanelManager : MonoBehaviour {
 
     GestureRecognizer _gestureRecognizer;
 
+    bool toggle = false;
+
     // Use this for initialization
     void Start () {
         _gestureRecognizer = new GestureRecognizer();
@@ -32,11 +34,17 @@ public class PanelManager : MonoBehaviour {
     {
         Debug.Log("_gesureRecognizer_Tapped");
 
-        WorldAnchorManager.Instance.RemoveAnchor(this.PanelObject);
+#if !UNITY_EDITOR
+        toggle = !toggle;
+        ReadItLib.ActivateIt.ExecLedOn(toggle);
+#endif
 
-        PanelObject.transform.Translate(1, 0, 0);
 
-        WorldAnchorManager.Instance.AttachAnchor(this.PanelObject, AnchorName);
-        Debug.Log("Anchor reattached for: " + this.gameObject.name + " - AnchorID: " + AnchorName);
+        //WorldAnchorManager.Instance.RemoveAnchor(this.PanelObject);
+
+        //PanelObject.transform.Translate(1, 0, 0);
+
+        //WorldAnchorManager.Instance.AttachAnchor(this.PanelObject, AnchorName);
+        //Debug.Log("Anchor reattached for: " + this.gameObject.name + " - AnchorID: " + AnchorName);
     }
 }
