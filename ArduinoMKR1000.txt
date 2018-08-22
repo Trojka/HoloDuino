@@ -1,6 +1,6 @@
 https://create.arduino.cc/projecthub/charifmahmoudi/arduino-mkr1000-getting-started-08bb4a
 https://github.com/Azure-Samples/iot-hub-c-m0wifi-getstartedkit/issues/44
-
+https://github.com/cmaglie/FlashStorage
 
 
 

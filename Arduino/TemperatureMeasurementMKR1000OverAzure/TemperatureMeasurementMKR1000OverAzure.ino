@@ -1,3 +1,6 @@
+//#include <FlashAsEEPROM.h>
+#include <FlashStorage.h>
+
 #include <WiFi101.h>
 #include <AzureIoTHub.h>
 #include <AzureIoTProtocol_MQTT.h>
@@ -10,8 +13,8 @@
 static char ssid[] = IOT_CONFIG_WIFI_SSID;
 static char pass[] = IOT_CONFIG_WIFI_PASSWORD;
 
-//String ssidString;
-//String passString;
+String ssidString = "WIFI_SSID";
+String passString = "WIFI_PWD";
 
 const int SensorPin = A0;
 const unsigned long SendEveryMilliSeconds = 5000;
@@ -38,11 +41,55 @@ const int maxWifiConnectAttempts = 10;
 int wifiConnectAttempt = 0;
 int status = WL_IDLE_STATUS;
 
+typedef struct {
+  boolean valid;
+  char ssid[50];
+  char pwd[50];
+} WifiSecrets;
+
+WifiSecrets wifiSecrets;
+FlashStorage(_storedWifiSecrets, WifiSecrets);
+
 void setup() {
 
-    Serial.begin(9600);  
-
     pinMode(1, OUTPUT);
+    pinMode(6, OUTPUT);
+
+    //Serial.begin(9600);  
+    //while (!Serial) ;
+
+    //digitalWrite(6, 1); 
+
+    wifiSecrets = _storedWifiSecrets.read();
+
+    if(wifiSecrets.valid == false) {
+      //Serial.println("Wifi secrets invalid !!!");
+      
+      ssidString.toCharArray(wifiSecrets.ssid, 50);
+      passString.toCharArray(wifiSecrets.pwd, 50);
+      wifiSecrets.valid = true;
+
+      _storedWifiSecrets.write(wifiSecrets);
+
+      //Serial.print("SSID: ");
+      //Serial.println(wifiSecrets.ssid);
+      //Serial.print("PWD: ");
+      //Serial.println(wifiSecrets.pwd);
+
+
+      //digitalWrite(1, 0); 
+      digitalWrite(6, 1); 
+    }
+    else {
+      //Serial.println("Wifi secrets valid !!!");
+      //Serial.print("SSID: ");
+      //Serial.println(wifiSecrets.ssid);
+      //Serial.print("PWD: ");
+      //Serial.println(wifiSecrets.pwd);
+
+      //digitalWrite(1, 1);
+      digitalWrite(6, 0); 
+    }
 
 //    pinMode(serialConnectLedPin, OUTPUT);
 //    pinMode(wifiConnectLedPin, OUTPUT);
@@ -50,7 +97,7 @@ void setup() {
 //    digitalWrite(serialConnectLedPin, serialConnectLedState);
 //    digitalWrite(wifiConnectLedPin, wifiConnectLedState);
 
-    sample_init(ssid, pass);
+//    sample_init(ssid, pass);
   
     
 //    Serial.print("Attempting to connect to WPA SSID: ");
@@ -72,6 +119,16 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+
+      //Serial.println("Wifi secrets valid !!!");
+      //Serial.print("SSID: ");
+      //Serial.println(wifiSecrets.ssid);
+      //Serial.print("PWD: ");
+      //Serial.println(wifiSecrets.pwd);
+
+if(wifiSecrets.valid == true) {
+  digitalWrite(1, 1); 
+}
 
 
 //    char receiveVal; 
@@ -166,16 +223,16 @@ void loop() {
   
   
 
-  currentTime = millis();
-
-  if ((currentTime - lastMeasurementTime) > SendEveryMilliSeconds)
-  {
-    CalcTemperature(&sensorValue, &voltageValue, &temperatureValue);
-    //SendToSerial(sensorValue, voltageValue, temperatureValue);
-    SendToAzure(sensorValue, voltageValue, temperatureValue);
-    //SendToAzure(10, 20, 30);
-    lastMeasurementTime = millis();
-  }
+//  currentTime = millis();
+//
+//  if ((currentTime - lastMeasurementTime) > SendEveryMilliSeconds)
+//  {
+//    CalcTemperature(&sensorValue, &voltageValue, &temperatureValue);
+//    //SendToSerial(sensorValue, voltageValue, temperatureValue);
+//    SendToAzure(sensorValue, voltageValue, temperatureValue);
+//    //SendToAzure(10, 20, 30);
+//    lastMeasurementTime = millis();
+//  }
   
 }
 
