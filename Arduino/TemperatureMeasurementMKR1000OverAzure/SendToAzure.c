@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "AzureIoTHub.h"
+//#include "serializer_devicetwin.h"
 #include "Iot.Secrets.h"
 
 static const char* connectionString = IOT_CONFIG_CONNECTION_STRING;
@@ -12,32 +13,43 @@ static const char* connectionString = IOT_CONFIG_CONNECTION_STRING;
 // Define the Model
 BEGIN_NAMESPACE(TempMeasurement);
 
-DECLARE_MODEL(Measurement,
-WITH_DATA(int, SensorValue),
-WITH_DATA(float, Voltage),
-WITH_DATA(float, Temperature),
-WITH_ACTION(TurnLedOn),
-WITH_ACTION(TurnLedOff)
-);
+//DECLARE_MODEL(Measurement,
+//WITH_DATA(int, SensorValue),
+//WITH_DATA(float, Voltage),
+//WITH_DATA(float, Temperature),
+//WITH_ACTION(TurnLedOn),
+//WITH_ACTION(TurnLedOff)
+//);
+
+
+
+//DECLARE_DEVICETWIN_MODEL(LedIllumination,
+//    WITH_REPORTED_PROPERTY(bool, ledOn) /*this is a simple reported property*/
+//);
 
 END_NAMESPACE(TempMeasurement);
 
 
-EXECUTE_COMMAND_RESULT TurnLedOn(Measurement* device)
-{
-    (void)device;
-    (void)printf("Turning LED on.\r\n");
-    digitalWrite(1, 1); 
-    return EXECUTE_COMMAND_SUCCESS;
-}
+//EXECUTE_COMMAND_RESULT TurnLedOn(Measurement* device)
+//{
+//    (void)device;
+//    (void)printf("Turning LED on.\r\n");
+//    digitalWrite(1, 1); 
+//    return EXECUTE_COMMAND_SUCCESS;
+//}
+//
+//EXECUTE_COMMAND_RESULT TurnLedOff(Measurement* device)
+//{
+//    (void)device;
+//    (void)printf("Turning LED off.\r\n");
+//    digitalWrite(1, 0); 
+//    return EXECUTE_COMMAND_SUCCESS;
+//}
 
-EXECUTE_COMMAND_RESULT TurnLedOff(Measurement* device)
-{
-    (void)device;
-    (void)printf("Turning LED off.\r\n");
-    digitalWrite(1, 0); 
-    return EXECUTE_COMMAND_SUCCESS;
-}
+
+static bool g_continueRunning;
+#define DOWORK_LOOP_NUM     100
+
 
 void sendCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* userContextCallback)
 {
@@ -48,36 +60,36 @@ void sendCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* userContextCal
     printf("Result Call Back Called! Result is: %s \r\n", ENUM_TO_STRING(IOTHUB_CLIENT_CONFIRMATION_RESULT, result));
 }
 
-
-static void sendMessage(IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle, const unsigned char* buffer, size_t size, Measurement *myMeasurement)
-{
-    static unsigned int messageTrackingId;
-    IOTHUB_MESSAGE_HANDLE messageHandle = IoTHubMessage_CreateFromByteArray(buffer, size);
-    if (messageHandle == NULL)
-    {
-        printf("unable to create a new IoTHubMessage\r\n");
-    }
-    else
-    {
-//        MAP_HANDLE propMap = IoTHubMessage_Properties(messageHandle);
-//        (void)sprintf_s(propText, sizeof(propText), myWeather->Temperature > 28 ? "true" : "false");
-//        if (Map_AddOrUpdate(propMap, "temperatureAlert", propText) != MAP_OK)
+//
+//static void sendMessage(IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle, const unsigned char* buffer, size_t size, Measurement *myMeasurement)
+//{
+//    static unsigned int messageTrackingId;
+//    IOTHUB_MESSAGE_HANDLE messageHandle = IoTHubMessage_CreateFromByteArray(buffer, size);
+//    if (messageHandle == NULL)
+//    {
+//        printf("unable to create a new IoTHubMessage\r\n");
+//    }
+//    else
+//    {
+////        MAP_HANDLE propMap = IoTHubMessage_Properties(messageHandle);
+////        (void)sprintf_s(propText, sizeof(propText), myWeather->Temperature > 28 ? "true" : "false");
+////        if (Map_AddOrUpdate(propMap, "temperatureAlert", propText) != MAP_OK)
+////        {
+////            (void)printf("ERROR: Map_AddOrUpdate Failed!\r\n");
+////        }
+//
+//        if (IoTHubClient_LL_SendEventAsync(iotHubClientHandle, messageHandle, sendCallback, (void*)(uintptr_t)messageTrackingId) != IOTHUB_CLIENT_OK)
 //        {
-//            (void)printf("ERROR: Map_AddOrUpdate Failed!\r\n");
+//            printf("failed to hand over the message to IoTHubClient");
 //        }
-
-        if (IoTHubClient_LL_SendEventAsync(iotHubClientHandle, messageHandle, sendCallback, (void*)(uintptr_t)messageTrackingId) != IOTHUB_CLIENT_OK)
-        {
-            printf("failed to hand over the message to IoTHubClient");
-        }
-        else
-        {
-            printf("IoTHubClient accepted the message for delivery\r\n");
-        }
-        IoTHubMessage_Destroy(messageHandle);
-    }
-    messageTrackingId++;
-}
+//        else
+//        {
+//            printf("IoTHubClient accepted the message for delivery\r\n");
+//        }
+//        IoTHubMessage_Destroy(messageHandle);
+//    }
+//    messageTrackingId++;
+//}
 
 
 /*this function "links" IoTHub to the serialization library*/
@@ -115,6 +127,27 @@ static IOTHUBMESSAGE_DISPOSITION_RESULT IoTHubMessage(IOTHUB_MESSAGE_HANDLE mess
     return result;
 }
 
+static void deviceTwinCallback(DEVICE_TWIN_UPDATE_STATE update_state, const unsigned char* payLoad, size_t size, void* userContextCallback)
+{
+    (void)userContextCallback;
+
+    printf("Device Twin update received (state=%s, size=%u): \r\n", 
+        ENUM_TO_STRING(DEVICE_TWIN_UPDATE_STATE, update_state), size);
+    for (size_t n = 0; n < size; n++)
+    {
+        printf("%c", payLoad[n]);
+    }
+    printf("\r\n");
+}
+
+static void reportedStateCallback(int status_code, void* userContextCallback)
+{
+    (void)userContextCallback;
+    printf("Device Twin reported properties update completed with result: %d\r\n", status_code);
+
+    g_continueRunning = false;
+}
+
 void SendToAzure(int sensor, float voltage, float temperature) {
 
     if (platform_init() != 0)
@@ -124,6 +157,7 @@ void SendToAzure(int sensor, float voltage, float temperature) {
     else
     {
       if (serializer_init(NULL) != SERIALIZER_OK)
+      //if (SERIALIZER_REGISTER_NAMESPACE(TempMeasurement) == NULL)
       {
           printf("Failed on serializer_init\r\n");
       }
@@ -136,25 +170,51 @@ void SendToAzure(int sensor, float voltage, float temperature) {
         }
         else
         {
-          Measurement* someMeasurement = CREATE_MODEL_INSTANCE(TempMeasurement, Measurement);
-          if(someMeasurement == NULL)
-          {
-            printf("Failed on CREATE_MODEL_INSTANCE(TempMeasurement, Measurement)\r\n");
-          }
-          else
-          {
-
-            if (IoTHubClient_LL_SetMessageCallback(iotHubClientHandle, IoTHubMessage, someMeasurement) != IOTHUB_CLIENT_OK)
-            {
-                printf("unable to IoTHubClient_SetMessageCallback\r\n");
-            }
-            else
-            {
+//          Measurement* someMeasurement = CREATE_MODEL_INSTANCE(TempMeasurement, Measurement);
+//          if(someMeasurement == NULL)
+//          {
+//            printf("Failed on CREATE_MODEL_INSTANCE(TempMeasurement, Measurement)\r\n");
+//          }
+//          else
+//          {
+//
+//            if (IoTHubClient_LL_SetMessageCallback(iotHubClientHandle, IoTHubMessage, someMeasurement) != IOTHUB_CLIENT_OK)
+//            {
+//                printf("unable to IoTHubClient_SetMessageCallback\r\n");
+//            }
+//            else
+//            {
             
-              someMeasurement->SensorValue = sensor;
-              someMeasurement->Voltage = voltage;
-              someMeasurement->Temperature = temperature;
+//              someMeasurement->SensorValue = sensor;
+//              someMeasurement->Voltage = voltage;
+//              someMeasurement->Temperature = temperature;
 
+              bool traceOn = true;
+              const char* reportedState = "{'ledstate': 'off'}";
+              size_t reportedStateSize = strlen(reportedState);
+
+              (void)IoTHubClient_LL_SetOption(iotHubClientHandle, OPTION_LOG_TRACE, &traceOn);
+
+              (void)IoTHubClient_LL_SetDeviceTwinCallback(iotHubClientHandle, deviceTwinCallback, iotHubClientHandle);
+              (void)IoTHubClient_LL_SendReportedState(iotHubClientHandle, (const unsigned char*)reportedState, reportedStateSize, reportedStateCallback, iotHubClientHandle);
+
+digitalWrite(1, 1); 
+
+              do
+              {
+                  IoTHubClient_LL_DoWork(iotHubClientHandle);
+                  ThreadAPI_Sleep(100);
+              } while (g_continueRunning);   
+
+              for (size_t index = 0; index < DOWORK_LOOP_NUM; index++)
+              {
+                  IoTHubClient_LL_DoWork(iotHubClientHandle);
+                  ThreadAPI_Sleep(100);
+              }
+              LogInfo("IoTHubClient_LL_Destroy starting");
+
+digitalWrite(6, 1); 
+              
               {
 //                unsigned char* destination;
 //                size_t destinationSize;
@@ -178,18 +238,18 @@ void SendToAzure(int sensor, float voltage, float temperature) {
 
                 IOTHUB_CLIENT_STATUS status;
 
-                printf("Getting Send Status\r\n");
-                while (1) //(IoTHubClient_LL_GetSendStatus(iotHubClientHandle, &status) == IOTHUB_CLIENT_OK) && (status == IOTHUB_CLIENT_SEND_STATUS_BUSY))
-                {
-                    printf("Do Work\r\n");
-                    IoTHubClient_LL_DoWork(iotHubClientHandle);
-                    ThreadAPI_Sleep(100);
-                }              
+//                printf("Getting Send Status\r\n");
+//                while (1) //(IoTHubClient_LL_GetSendStatus(iotHubClientHandle, &status) == IOTHUB_CLIENT_OK) && (status == IOTHUB_CLIENT_SEND_STATUS_BUSY))
+//                {
+//                    printf("Do Work\r\n");
+//                    IoTHubClient_LL_DoWork(iotHubClientHandle);
+//                    ThreadAPI_Sleep(100);
+//                }              
               
-            }         
-            
-            DESTROY_MODEL_INSTANCE(someMeasurement);
-          }
+//            }         
+//            
+//            DESTROY_MODEL_INSTANCE(someMeasurement);
+//          }
 
           IoTHubClient_LL_Destroy(iotHubClientHandle);
           
