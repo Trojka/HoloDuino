@@ -556,7 +556,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AnchorDebugText: {fileID: 0}
-  ShowDetailedLogs: 0
+  ShowDetailedLogs: 1
   PersistentAnchors: 1
 --- !u!4 &1490910691
 Transform:
