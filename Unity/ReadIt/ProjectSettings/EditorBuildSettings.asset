@@ -4,4 +4,7 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/HoloToolkit-Examples/UX/Scenes/ProgressExample.unity
+    guid: 1df58ce346bbb9246b021d5bbccfe0b1
