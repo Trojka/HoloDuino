@@ -29,7 +29,7 @@ public partial class ShowTemperature : MonoBehaviour {
         //await TimeSpan.FromSeconds(1);
 #endif
 
-        //StartCoroutine(PostRequest(WebAPIEndpoint, "{\"query\":\"select * from devices\"}"));
+        StartCoroutine(PostRequest(WebAPIEndpoint, "{\"query\":\"select * from devices\"}"));
 
     }
 
@@ -56,7 +56,15 @@ public partial class ShowTemperature : MonoBehaviour {
         }
 
         Debug.Log(result);
-        _textToDisplay = result;
+
+        List<DeviceModel> listOfModels = new List<DeviceModel>() { new DeviceModel() { deviceId = "dev_id" } };
+        string jsonString = ShowTemperature.ToJson(listOfModels.ToArray());
+
+
+        string formattedJson = "{\"Received\"" + result.Substring("Received".Length) + "}";
+        DeviceModel[] devices = ShowTemperature.FromJson<DeviceModel>(formattedJson);
+
+        _textToDisplay = devices[0].deviceId;
     }
 
     // Update is called once per frame
@@ -81,4 +89,25 @@ public partial class ShowTemperature : MonoBehaviour {
     //    _deviceIds = deviceIds;
     //    _deviceIdsFilled = ready;
     //}
+
+
+    public static T[] FromJson<T>(string json)
+    {
+        Wrapper<T> wrapper = UnityEngine.JsonUtility.FromJson<Wrapper<T>>(json);
+        return wrapper.Received;
+    }
+
+    public static string ToJson<T>(T[] array)
+    {
+        Wrapper<T> wrapper = new Wrapper<T>();
+        wrapper.Received = array;
+        return UnityEngine.JsonUtility.ToJson(wrapper);
+    }
+
+    [Serializable]
+    private class Wrapper<T>
+    {
+        public T[] Received;
+    }
+
 }

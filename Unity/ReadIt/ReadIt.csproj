@@ -953,6 +953,8 @@
     <Compile Include="Assets\HoloToolkit-Examples\UX\Scripts\Widgets\TextMeshColorThemeWidget.cs" />
     <Compile Include="Assets\HoloToolkit-Examples\UX\Scripts\Widgets\TextureThemeWidget.cs" />
     <Compile Include="Assets\Scripts\AwaitExtensions.cs" />
+    <Compile Include="Assets\Scripts\EnvironmentConfiguration.cs" />
+    <Compile Include="Assets\Scripts\Model\DeviceModel.cs" />
     <Compile Include="Assets\Scripts\PanelManager.cs" />
     <Compile Include="Assets\Scripts\ShowTemperature.cs" />
     <Compile Include="Assets\Scripts\ShowTemperature.Secrets.cs" />
