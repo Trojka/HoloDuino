@@ -29,7 +29,7 @@ public partial class ShowTemperature : MonoBehaviour {
         //await TimeSpan.FromSeconds(1);
 #endif
 
-        StartCoroutine(PostRequest(WebAPIEndpoint, "{\"query\":\"select * from devices\"}"));
+        //StartCoroutine(PostRequest(WebAPIEndpoint, "{\"query\":\"select * from devices\"}"));
 
     }
 
