@@ -9,6 +9,7 @@
 #include "SendToSerial.h"
 #include "SendToAzure.h"
 #include "samd/sample_init.h"
+#include "DeviceConfig.h"
 
 static char ssid[] = IOT_CONFIG_WIFI_SSID;
 static char pass[] = IOT_CONFIG_WIFI_PASSWORD;
@@ -55,10 +56,13 @@ void setup() {
     pinMode(1, OUTPUT);
     pinMode(6, OUTPUT);
 
-    //Serial.begin(9600);  
-    //while (!Serial) ;
+    digitalWrite(1, 0);
+    digitalWrite(6, 0);
 
-    //digitalWrite(6, 1); 
+    Serial.begin(9600);  
+    while (!Serial) ;
+
+     
 
 //    wifiSecrets = _storedWifiSecrets.read();
 //
@@ -97,7 +101,7 @@ void setup() {
 //    digitalWrite(serialConnectLedPin, serialConnectLedState);
 //    digitalWrite(wifiConnectLedPin, wifiConnectLedState);
 
-    sample_init(ssid, pass);
+//    sample_init(ssid, pass);
   
     
 //    Serial.print("Attempting to connect to WPA SSID: ");
@@ -117,7 +121,33 @@ void setup() {
 //    Serial.println("\r\nConnected to wifi");
 }
 
+String receivedString;
+
+bool sendDeviceId = false;
+
 void loop() {
+
+
+  if(Serial.available() > 0) {
+    String data = Serial.readString();
+    receivedString = receivedString + data;
+
+    int startOfEnd = receivedString.indexOf("GET");
+    if(startOfEnd != -1) {
+      digitalWrite(6, 1);   
+      String command = receivedString.substring(0, startOfEnd);
+      if(command.equals("DEVICEID"))
+        sendDeviceId = true;
+    }
+  }
+
+  if(sendDeviceId) {
+    Serial.println("[DEVICEID]1000[END]");
+    digitalWrite(1, 1);
+    sendDeviceId = false;
+  }
+
+  
   // put your main code here, to run repeatedly:
 
       //Serial.println("Wifi secrets valid !!!");
@@ -223,16 +253,16 @@ void loop() {
   
   
 
-  currentTime = millis();
-
-  if ((currentTime - lastMeasurementTime) > SendEveryMilliSeconds)
-  {
-    CalcTemperature(&sensorValue, &voltageValue, &temperatureValue);
-    //SendToSerial(sensorValue, voltageValue, temperatureValue);
-    SendToAzure(sensorValue, voltageValue, temperatureValue);
-    //SendToAzure(10, 20, 30);
-    lastMeasurementTime = millis();
-  }
+//  currentTime = millis();
+//
+//  if ((currentTime - lastMeasurementTime) > SendEveryMilliSeconds)
+//  {
+//    CalcTemperature(&sensorValue, &voltageValue, &temperatureValue);
+//    //SendToSerial(sensorValue, voltageValue, temperatureValue);
+//    SendToAzure(sensorValue, voltageValue, temperatureValue);
+//    //SendToAzure(10, 20, 30);
+//    lastMeasurementTime = millis();
+//  }
   
 }
 

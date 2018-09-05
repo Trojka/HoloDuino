@@ -1,6 +1,17 @@
 #include <Arduino.h>
 #include "DeviceConfig.h"
 
+bool startSendingReceived = false;
+
+void SendDeviceId() {
+
+
+  
+}
+
+
+
+
 void DeviceConfig() {
   String descriptor = "<subsystems>"
   "<system id='1'>"

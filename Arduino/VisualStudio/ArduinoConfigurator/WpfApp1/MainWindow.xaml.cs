@@ -42,6 +42,11 @@ namespace WpfApp1
             if (string.IsNullOrEmpty(ardiuinoSerialPort))
                 return;
 
+            var deviceIdReceiver = new DeviceIdReceiver();
+            deviceIdReceiver.GetDeviceId(ardiuinoSerialPort);
+
+            return;
+
             SerialPort port = new SerialPort(ardiuinoSerialPort, 9600); //, Parity.None, 8, StopBits.One);
             port.Open();
             port.DataReceived += Port_DataReceived;
