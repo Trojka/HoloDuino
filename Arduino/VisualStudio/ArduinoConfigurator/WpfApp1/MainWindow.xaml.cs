@@ -1,5 +1,8 @@
-﻿using System;
+﻿using ArduinoDeviceManagement.Arduino;
+using ArduinoDeviceManagement.Azure;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO.Ports;
 using System.Linq;
 using System.Management;
@@ -36,34 +39,29 @@ namespace WpfApp1
         bool sendedWifiPasswordToArduino = false;
         bool arduinoReceivedWifiPassword = false;
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
             string ardiuinoSerialPort = AutodetectArduinoPort();
             if (string.IsNullOrEmpty(ardiuinoSerialPort))
                 return;
 
-            var deviceIdReceiver = new DeviceIdReceiver();
-            deviceIdReceiver.GetDeviceId(ardiuinoSerialPort);
-
-            return;
-
             SerialPort port = new SerialPort(ardiuinoSerialPort, 9600); //, Parity.None, 8, StopBits.One);
             port.Open();
-            port.DataReceived += Port_DataReceived;
 
-            sendedWifiNetworkToArduino = true;
-            Console.WriteLine("Sending Wifi network.");
-            port.WriteLine(TxtWifiNtwrk.Text);
+            var deviceIdReceiver = new DeviceIdReader();
+            var deviceId = await deviceIdReceiver.GetData(port);
+            Debug.WriteLine(deviceId);
 
-            while(!arduinoReceivedWifiNetwork)
-            {
-                Console.WriteLine("Waiting for Received Wifi network answer.");
-                Thread.Sleep(10);
-            }
+            //var deviceCfgReceiver = new DeviceDescriptionReader();
+            //var deviceCfg = await deviceCfgReceiver.GetData(port);
+            //Debug.WriteLine(deviceCfg);
 
-            sendedWifiPasswordToArduino = true;
-            Console.WriteLine("Sending Wifi password.");
-            port.WriteLine(TxtWifiPwd.Text);
+            port.Close();
+
+            var manager = new DeviceRegistrar(IoTHubConnectionString);
+            manager.RegisterDevice(deviceId);
+
+            return;
 
         }
 

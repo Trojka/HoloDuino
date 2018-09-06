@@ -4,16 +4,12 @@
 bool startSendingReceived = false;
 
 void SendDeviceId() {
-
-
-  
+  String deviceId = "[DEVICEID]087E94E8-5A0F-43A9-B20F-B17CC3CBC9C5[END]";
+  Serial.println(deviceId);
 }
 
-
-
-
-void DeviceConfig() {
-  String descriptor = "<subsystems>"
+void SendDeviceConfig() {
+  String descriptor = "[DEVICEDESCRIPTION]<subsystems>"
   "<system id='1'>"
     "<ui>"
       "<toggle>"
@@ -30,5 +26,6 @@ void DeviceConfig() {
       "</toggle>"
     "</ui>"
   "</system>"
-  "</subsystems>";
+  "</subsystems>[END]";
+  Serial.println(descriptor);
 }

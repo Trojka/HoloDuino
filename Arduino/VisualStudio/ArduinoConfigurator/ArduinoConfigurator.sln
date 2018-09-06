@@ -5,16 +5,52 @@ VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp1", "WpfApp1\WpfApp1.csproj", "{95EFA57A-0CCE-4DB0-AC66-7AE05369CD0D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduinoDeviceManagement", "ArduinoDeviceManagement\ArduinoDeviceManagement.csproj", "{1091E17C-84EA-4957-8A33-5EF5DF896C3E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|ARM = Debug|ARM
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|ARM = Release|ARM
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{95EFA57A-0CCE-4DB0-AC66-7AE05369CD0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{95EFA57A-0CCE-4DB0-AC66-7AE05369CD0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95EFA57A-0CCE-4DB0-AC66-7AE05369CD0D}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{95EFA57A-0CCE-4DB0-AC66-7AE05369CD0D}.Debug|ARM.Build.0 = Debug|Any CPU
+		{95EFA57A-0CCE-4DB0-AC66-7AE05369CD0D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{95EFA57A-0CCE-4DB0-AC66-7AE05369CD0D}.Debug|x64.Build.0 = Debug|Any CPU
+		{95EFA57A-0CCE-4DB0-AC66-7AE05369CD0D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{95EFA57A-0CCE-4DB0-AC66-7AE05369CD0D}.Debug|x86.Build.0 = Debug|Any CPU
 		{95EFA57A-0CCE-4DB0-AC66-7AE05369CD0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95EFA57A-0CCE-4DB0-AC66-7AE05369CD0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95EFA57A-0CCE-4DB0-AC66-7AE05369CD0D}.Release|ARM.ActiveCfg = Release|Any CPU
+		{95EFA57A-0CCE-4DB0-AC66-7AE05369CD0D}.Release|ARM.Build.0 = Release|Any CPU
+		{95EFA57A-0CCE-4DB0-AC66-7AE05369CD0D}.Release|x64.ActiveCfg = Release|Any CPU
+		{95EFA57A-0CCE-4DB0-AC66-7AE05369CD0D}.Release|x64.Build.0 = Release|Any CPU
+		{95EFA57A-0CCE-4DB0-AC66-7AE05369CD0D}.Release|x86.ActiveCfg = Release|Any CPU
+		{95EFA57A-0CCE-4DB0-AC66-7AE05369CD0D}.Release|x86.Build.0 = Release|Any CPU
+		{1091E17C-84EA-4957-8A33-5EF5DF896C3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1091E17C-84EA-4957-8A33-5EF5DF896C3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1091E17C-84EA-4957-8A33-5EF5DF896C3E}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{1091E17C-84EA-4957-8A33-5EF5DF896C3E}.Debug|ARM.Build.0 = Debug|Any CPU
+		{1091E17C-84EA-4957-8A33-5EF5DF896C3E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1091E17C-84EA-4957-8A33-5EF5DF896C3E}.Debug|x64.Build.0 = Debug|Any CPU
+		{1091E17C-84EA-4957-8A33-5EF5DF896C3E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1091E17C-84EA-4957-8A33-5EF5DF896C3E}.Debug|x86.Build.0 = Debug|Any CPU
+		{1091E17C-84EA-4957-8A33-5EF5DF896C3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1091E17C-84EA-4957-8A33-5EF5DF896C3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1091E17C-84EA-4957-8A33-5EF5DF896C3E}.Release|ARM.ActiveCfg = Release|Any CPU
+		{1091E17C-84EA-4957-8A33-5EF5DF896C3E}.Release|ARM.Build.0 = Release|Any CPU
+		{1091E17C-84EA-4957-8A33-5EF5DF896C3E}.Release|x64.ActiveCfg = Release|Any CPU
+		{1091E17C-84EA-4957-8A33-5EF5DF896C3E}.Release|x64.Build.0 = Release|Any CPU
+		{1091E17C-84EA-4957-8A33-5EF5DF896C3E}.Release|x86.ActiveCfg = Release|Any CPU
+		{1091E17C-84EA-4957-8A33-5EF5DF896C3E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

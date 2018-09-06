@@ -3,6 +3,6 @@
 
 void SendDeviceId();
 
-void DeviceConfig();
+void SendDeviceConfig();
 
 #endif /* DEVICECONFIG_H */

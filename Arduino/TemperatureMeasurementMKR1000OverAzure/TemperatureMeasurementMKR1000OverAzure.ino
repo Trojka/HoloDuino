@@ -124,6 +124,7 @@ void setup() {
 String receivedString;
 
 bool sendDeviceId = false;
+bool sendDeviceCfg = false;
 
 void loop() {
 
@@ -138,13 +139,23 @@ void loop() {
       String command = receivedString.substring(0, startOfEnd);
       if(command.equals("DEVICEID"))
         sendDeviceId = true;
+      if(command.equals("DEVICEDESCRIPTION"))
+        sendDeviceCfg = true;
     }
   }
 
   if(sendDeviceId) {
-    Serial.println("[DEVICEID]1000[END]");
+    SendDeviceId();
     digitalWrite(1, 1);
     sendDeviceId = false;
+    receivedString = "";
+  }
+
+  if(sendDeviceCfg) {
+    SendDeviceConfig();
+    digitalWrite(1, 1);
+    sendDeviceCfg = false;
+    receivedString = "";
   }
 
   
