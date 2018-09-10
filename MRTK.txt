@@ -1,1 +1,5 @@
 https://github.com/Microsoft/MixedRealityToolkit-Unity/issues/937
+
+https://forum.unity.com/threads/xml-json-dynamic-reading.362073/
+http://wiki.unity3d.com/index.php/SimpleJSON
+

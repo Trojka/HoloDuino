@@ -3,3 +3,5 @@ https://stackoverflow.com/questions/45006986/how-can-i-receive-from-azure-iot-hu
 https://mtaulty.com/2016/10/25/windows-10-uwp-unity-and-adding-a-reference-to-a-uwp-class-library/
 
 https://www.codeproject.com/Articles/1113447/Azure-IOT-Hub-REST-API
+
+https://feedback.azure.com/forums/321918-azure-iot/suggestions/20162305-support-arrays-for-tags-in-device-twins 
