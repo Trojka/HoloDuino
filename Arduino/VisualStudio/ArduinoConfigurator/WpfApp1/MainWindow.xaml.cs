@@ -52,14 +52,14 @@ namespace WpfApp1
             var deviceId = await deviceIdReceiver.GetData(port);
             Debug.WriteLine(deviceId);
 
-            //var deviceCfgReceiver = new DeviceDescriptionReader();
-            //var deviceCfg = await deviceCfgReceiver.GetData(port);
-            //Debug.WriteLine(deviceCfg);
+            var deviceDescriptionReceiver = new DeviceDescriptionReader();
+            var deviceDescription = await deviceDescriptionReceiver.GetData(port);
+            Debug.WriteLine(deviceDescription);
 
             port.Close();
 
             var manager = new DeviceRegistrar(IoTHubConnectionString);
-            manager.RegisterDevice(deviceId);
+            manager.RegisterDevice(deviceId, deviceDescription);
 
             return;
 

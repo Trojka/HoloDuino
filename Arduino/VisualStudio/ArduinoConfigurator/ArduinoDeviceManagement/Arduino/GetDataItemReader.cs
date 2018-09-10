@@ -50,7 +50,9 @@ namespace ArduinoDeviceManagement.Arduino
 
                 if (receivedData.Contains(StartMarker) && receivedData.Contains(EndMarker))
                 {
-                    var dataItem = receivedData.Substring(StartMarker.Length, receivedData.IndexOf(EndMarker) - StartMarker.Length);
+                    int startPos = receivedData.IndexOf(StartMarker) + StartMarker.Length;
+                    int endPos = receivedData.IndexOf(EndMarker) - startPos;
+                    var dataItem = receivedData.Substring(startPos, endPos);
                     return dataItem;
                 }
             }
