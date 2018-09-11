@@ -5,13 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="201.362" Width="285.214">
+        Title="MainWindow" Height="208.362" Width="283.214">
     <Grid Margin="0,0,2,-3">
-        <Button Content="Send" HorizontalAlignment="Left" Margin="171,112,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-        <TextBox x:Name="TxtWifiNtwrk" HorizontalAlignment="Left" Height="23" Margin="126,31,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-        <TextBlock HorizontalAlignment="Left" Margin="25,32,0,0" TextWrapping="Wrap" Text="Wifi Network" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="25,71,0,0" TextWrapping="Wrap" Text="Wifi Password" VerticalAlignment="Top"/>
-        <TextBox x:Name="TxtWifiPwd" HorizontalAlignment="Left" Height="23" Margin="126,70,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <Button Content="Register" HorizontalAlignment="Left" Margin="161,143,0,0" VerticalAlignment="Top" Width="104" Click="BtnRegisterClick" RenderTransformOrigin="0.404,0.15"/>
+        <TextBox x:Name="TxtWifiNtwrk" HorizontalAlignment="Left" Height="23" Margin="104,67,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="161"/>
+        <TextBlock HorizontalAlignment="Left" Margin="25,68,0,0" TextWrapping="Wrap" Text="Wifi Network" VerticalAlignment="Top" Width="74" Height="22"/>
+        <TextBlock HorizontalAlignment="Left" Margin="25,97,0,0" TextWrapping="Wrap" Text="Wifi Password" VerticalAlignment="Top" Height="23"/>
+        <TextBox x:Name="TxtWifiPwd" HorizontalAlignment="Left" Height="23" Margin="104,97,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="161"/>
+        <ComboBox x:Name="CmbComPorts" HorizontalAlignment="Left" Margin="104,10,0,0" VerticalAlignment="Top" Width="161"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Select Arduino" VerticalAlignment="Top" RenderTransformOrigin="0.286,0" Width="89" Height="22"/>
 
     </Grid>
 </Window>

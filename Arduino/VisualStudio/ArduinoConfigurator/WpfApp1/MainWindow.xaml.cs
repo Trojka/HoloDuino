@@ -1,4 +1,5 @@
-﻿using ArduinoDeviceManagement.Arduino;
+﻿using ArduinoDeviceManagement;
+using ArduinoDeviceManagement.Arduino;
 using ArduinoDeviceManagement.Azure;
 using System;
 using System.Collections.Generic;
@@ -32,6 +33,13 @@ namespace WpfApp1
 
             TxtWifiNtwrk.Text = WifiNetworkDefaultName;
             TxtWifiPwd.Text = WifiPasswordDefaultName;
+
+            var comPorts = ArduinoComm.GetComPorts();
+            CmbComPorts.ItemsSource = comPorts;
+            CmbComPorts.SelectedValuePath = "Id";
+
+            var arduinoPortId = ArduinoComm.AutodetectArduinoPortId();
+            CmbComPorts.SelectedValue = arduinoPortId;
         }
 
         bool sendedWifiNetworkToArduino = false;
@@ -39,9 +47,9 @@ namespace WpfApp1
         bool sendedWifiPasswordToArduino = false;
         bool arduinoReceivedWifiPassword = false;
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private async void BtnRegisterClick(object sender, RoutedEventArgs e)
         {
-            string ardiuinoSerialPort = AutodetectArduinoPort();
+            var ardiuinoSerialPort = CmbComPorts.SelectedValue as string;
             if (string.IsNullOrEmpty(ardiuinoSerialPort))
                 return;
 
@@ -63,53 +71,6 @@ namespace WpfApp1
 
             return;
 
-        }
-
-        private void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
-            SerialPort port = (SerialPort)sender;
-            if (sendedWifiNetworkToArduino && !arduinoReceivedWifiNetwork)
-            {
-                Console.WriteLine("Received send Wifi network answer: " + port.ReadLine());
-                arduinoReceivedWifiNetwork = true;
-            }
-
-            if (arduinoReceivedWifiNetwork && sendedWifiPasswordToArduino && !arduinoReceivedWifiPassword)
-            {
-                Console.WriteLine("Received send Wifi password answer: " + port.ReadLine());
-                arduinoReceivedWifiPassword = true;
-            }
-
-            if(arduinoReceivedWifiNetwork && arduinoReceivedWifiPassword)
-                Console.WriteLine("Received: " + port.ReadLine());
-        }
-
-        // https://stackoverflow.com/questions/3293889/how-to-auto-detect-arduino-com-port
-        private string AutodetectArduinoPort()
-        {
-            ManagementScope connectionScope = new ManagementScope();
-            SelectQuery serialQuery = new SelectQuery("SELECT * FROM Win32_SerialPort");
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher(connectionScope, serialQuery);
-
-            try
-            {
-                foreach (ManagementObject item in searcher.Get())
-                {
-                    string desc = item["Description"].ToString();
-                    string deviceId = item["DeviceID"].ToString();
-
-                    if (desc.Contains("Arduino"))
-                    {
-                        return deviceId;
-                    }
-                }
-            }
-            catch (ManagementException e)
-            {
-                /* Do Nothing */
-            }
-
-            return null;
         }
     }
 }
