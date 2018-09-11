@@ -5,4 +5,8 @@ void SendDeviceId();
 
 void SendDeviceConfig();
 
+String ReceiveWifiSSID();
+
+//String ReceiveWifiPassword();
+
 #endif /* DEVICECONFIG_H */

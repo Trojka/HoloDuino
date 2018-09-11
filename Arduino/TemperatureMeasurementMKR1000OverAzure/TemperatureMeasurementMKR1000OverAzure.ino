@@ -124,37 +124,53 @@ void setup() {
 String receivedString;
 
 bool sendDeviceId = false;
-bool sendDeviceCfg = false;
+bool sendDeviceDescription = false;
+
+bool deviceIdWasSend = false;
+bool deviceDescriptionWasSend = false;
+
+bool setWifiSSID = false;
+bool setWifiPwd = false;
+
+String setDataValue;
+String wifiSSIDValue;
+String wifiPwdValue;
 
 void loop() {
-
 
   if(Serial.available() > 0) {
     String data = Serial.readString();
     receivedString = receivedString + data;
 
-    int startOfEnd = receivedString.indexOf("GET");
-    if(startOfEnd != -1) {
+    int endOfGet = receivedString.indexOf("GET");
+    if(endOfGetfGet != -1) {
       digitalWrite(6, 1);   
-      String command = receivedString.substring(0, startOfEnd);
+      String command = receivedString.substring(0, endOfGet);
       if(command.equals("DEVICEID"))
         sendDeviceId = true;
       if(command.equals("DEVICEDESCRIPTION"))
-        sendDeviceCfg = true;
+        sendDeviceDescription = true;
+    }
+
+    int startOfSet = receivedString.indexOf("SET");
+    if(startOfSet != -1) {
+      String command = receivedString.substring(0, startOfSet);
+      if(command.indexOf("WIFISSID") != -1)
+        setWifiSSID = true;
     }
   }
 
-  if(sendDeviceId) {
+  if(sendDeviceId && !deviceIdWasSend) {
     SendDeviceId();
     digitalWrite(1, 1);
-    sendDeviceId = false;
+    deviceIdWasSend = true;
     receivedString = "";
   }
 
-  if(sendDeviceCfg) {
+  if(sendDeviceDescription && !deviceDescriptionWasSend) {
     SendDeviceConfig();
     digitalWrite(1, 1);
-    sendDeviceCfg = false;
+    deviceDescriptionWasSend = true;
     receivedString = "";
   }
 

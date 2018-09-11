@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include "DeviceConfig.h"
 
-bool startSendingReceived = false;
 
 void SendDeviceId() {
   String deviceId = "[DEVICEID]087E94E8-5A0F-43A9-B20F-B17CC3CBC9C5[END]";
@@ -11,6 +10,7 @@ void SendDeviceId() {
 void SendDeviceConfig() {
   String descriptor = "[DEVICEDESCRIPTION]"
   "{\"systems\":{"
+  "\"name\":\"Buttons\","
   "\"count\":2,"
   "\"sys1\":{"
     "\"id\":1,"
