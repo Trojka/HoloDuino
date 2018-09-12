@@ -92,6 +92,9 @@
     <Compile Include="Arduino\DeviceDescriptionReader.cs" />
     <Compile Include="Arduino\DeviceIdReader.cs" />
     <Compile Include="Arduino\GetDataItemReader.cs" />
+    <Compile Include="Arduino\SetDataItemWriter.cs" />
+    <Compile Include="Arduino\WifiPWDWriter.cs" />
+    <Compile Include="Arduino\WifiSSIDWriter.cs" />
     <Compile Include="Azure\DeviceRegistrar.cs" />
     <Compile Include="ComPort.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

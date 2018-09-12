@@ -129,8 +129,13 @@ bool sendDeviceDescription = false;
 bool deviceIdWasSend = false;
 bool deviceDescriptionWasSend = false;
 
+String WifiSSIDMarker = "WIFISSID";
+String WifiPWDMarker = "WIFIPWD";
+
 bool setWifiSSID = false;
+bool wifiSSIDWasSet = false;
 bool setWifiPwd = false;
+bool wifiPwdWasSet = false;
 
 String setDataValue;
 String wifiSSIDValue;
@@ -143,8 +148,7 @@ void loop() {
     receivedString = receivedString + data;
 
     int endOfGet = receivedString.indexOf("GET");
-    if(endOfGetfGet != -1) {
-      digitalWrite(6, 1);   
+    if(endOfGet != -1) {
       String command = receivedString.substring(0, endOfGet);
       if(command.equals("DEVICEID"))
         sendDeviceId = true;
@@ -154,9 +158,18 @@ void loop() {
 
     int startOfSet = receivedString.indexOf("SET");
     if(startOfSet != -1) {
+      digitalWrite(6, 1);   
       String command = receivedString.substring(0, startOfSet);
-      if(command.indexOf("WIFISSID") != -1)
+      if(command.indexOf(WifiSSIDMarker) != -1)
+      {
+        setDataValue = command;
         setWifiSSID = true;
+      }
+      if(command.indexOf(WifiPWDMarker) != -1)
+      {
+        setDataValue = command;
+        setWifiPwd = true;
+      }
     }
   }
 
@@ -172,6 +185,28 @@ void loop() {
     digitalWrite(1, 1);
     deviceDescriptionWasSend = true;
     receivedString = "";
+  }
+
+  if(setWifiSSID && !wifiSSIDWasSet)
+  {
+    int wifiSSIDMarkerStart = setDataValue.indexOf(WifiSSIDMarker);
+    int wifiSSIDDataStart = wifiSSIDMarkerStart + WifiSSIDMarker.length() + 1;
+    wifiSSIDValue = setDataValue.substring(wifiSSIDDataStart);
+    digitalWrite(1, 1);
+    wifiSSIDWasSet = true;
+    receivedString = "";
+    setDataValue = "";
+  }
+
+  if(setWifiPwd && !wifiPwdWasSet)
+  {
+    int wifiPWDMarkerStart = setDataValue.indexOf(WifiPWDMarker);
+    int wifiPWDDataStart = wifiPWDMarkerStart + WifiPWDMarker.length() + 1;
+    wifiPwdValue = setDataValue.substring(wifiPWDDataStart);
+    digitalWrite(1, 1);
+    wifiPwdWasSet = true;
+    receivedString = "";
+    setDataValue = "";
   }
 
   
