@@ -6,4 +6,5 @@ using UnityEngine;
 [Serializable]
 public class DeviceModel {
     public string deviceId;
+    public string tags;
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimpleJSON;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,7 +30,7 @@ public partial class ShowTemperature : MonoBehaviour {
         //await TimeSpan.FromSeconds(1);
 #endif
 
-        //StartCoroutine(PostRequest(WebAPIEndpoint, "{\"query\":\"select * from devices\"}"));
+        StartCoroutine(PostRequest(WebAPIEndpoint, "{\"query\":\"select * from devices\"}"));
 
     }
 
@@ -52,19 +53,24 @@ public partial class ShowTemperature : MonoBehaviour {
         }
         else
         {
-            result = "Received: " + uwr.downloadHandler.text;
+            result = /*"Received: " +*/ uwr.downloadHandler.text;
         }
 
         Debug.Log(result);
 
-        List<DeviceModel> listOfModels = new List<DeviceModel>() { new DeviceModel() { deviceId = "dev_id" } };
-        string jsonString = ShowTemperature.ToJson(listOfModels.ToArray());
+        //List<DeviceModel> listOfModels = new List<DeviceModel>() { new DeviceModel() { deviceId = "dev_id" } };
+        //string jsonString = ShowTemperature.ToJson(listOfModels.ToArray());
 
 
         string formattedJson = "{\"Received\"" + result.Substring("Received".Length) + "}";
-        DeviceModel[] devices = ShowTemperature.FromJson<DeviceModel>(formattedJson);
 
-        _textToDisplay = devices[0].deviceId;
+        var N = JSON.Parse(result);
+        var cnt = N.AsArray.Count;
+        var sysCount = N.AsArray[0]["tags"]["systems"]["count"];
+
+        //DeviceModel[] devices = ShowTemperature.FromJson<DeviceModel>(formattedJson);
+
+        //_textToDisplay = devices[0].deviceId;
     }
 
     // Update is called once per frame
