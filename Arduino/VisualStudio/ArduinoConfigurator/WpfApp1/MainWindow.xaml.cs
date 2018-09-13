@@ -56,16 +56,16 @@ namespace WpfApp1
             SerialPort port = new SerialPort(ardiuinoSerialPort, 9600); //, Parity.None, 8, StopBits.One);
             port.Open();
 
-            //var deviceIdReceiver = new DeviceIdReader();
-            //var deviceId = await deviceIdReceiver.GetData(port);
-            //Debug.WriteLine(deviceId);
+            var deviceIdReceiver = new DeviceIdReader();
+            var deviceId = await deviceIdReceiver.GetData(port);
+            Debug.WriteLine(deviceId);
 
-            //var deviceDescriptionReceiver = new DeviceDescriptionReader();
-            //var deviceDescription = await deviceDescriptionReceiver.GetData(port);
-            //Debug.WriteLine(deviceDescription);
+            var deviceDescriptionReceiver = new DeviceDescriptionReader();
+            var deviceDescription = await deviceDescriptionReceiver.GetData(port);
+            Debug.WriteLine(deviceDescription);
 
-            //var wifiSSIDWriter = new WifiSSIDWriter();
-            //wifiSSIDWriter.SetData(port, TxtWifiNtwrk.Text);
+            var wifiSSIDWriter = new WifiSSIDWriter();
+            wifiSSIDWriter.SetData(port, TxtWifiNtwrk.Text);
 
             var wifiPWDWriter = new WifiPWDWriter();
             wifiPWDWriter.SetData(port, TxtWifiPwd.Text);

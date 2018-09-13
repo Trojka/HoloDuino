@@ -158,7 +158,7 @@ void loop() {
 
     int startOfSet = receivedString.indexOf("SET");
     if(startOfSet != -1) {
-      digitalWrite(6, 1);   
+      //digitalWrite(6, 1);   
       String command = receivedString.substring(0, startOfSet);
       if(command.indexOf(WifiSSIDMarker) != -1)
       {
@@ -175,14 +175,14 @@ void loop() {
 
   if(sendDeviceId && !deviceIdWasSend) {
     SendDeviceId();
-    digitalWrite(1, 1);
+    //digitalWrite(1, 1);
     deviceIdWasSend = true;
     receivedString = "";
   }
 
   if(sendDeviceDescription && !deviceDescriptionWasSend) {
     SendDeviceConfig();
-    digitalWrite(1, 1);
+    //digitalWrite(1, 1);
     deviceDescriptionWasSend = true;
     receivedString = "";
   }
@@ -192,7 +192,8 @@ void loop() {
     int wifiSSIDMarkerStart = setDataValue.indexOf(WifiSSIDMarker);
     int wifiSSIDDataStart = wifiSSIDMarkerStart + WifiSSIDMarker.length() + 1;
     wifiSSIDValue = setDataValue.substring(wifiSSIDDataStart);
-    digitalWrite(1, 1);
+    //digitalWrite(1, 1);
+
     wifiSSIDWasSet = true;
     receivedString = "";
     setDataValue = "";
@@ -203,12 +204,31 @@ void loop() {
     int wifiPWDMarkerStart = setDataValue.indexOf(WifiPWDMarker);
     int wifiPWDDataStart = wifiPWDMarkerStart + WifiPWDMarker.length() + 1;
     wifiPwdValue = setDataValue.substring(wifiPWDDataStart);
-    digitalWrite(1, 1);
+    //digitalWrite(1, 1);
+
     wifiPwdWasSet = true;
     receivedString = "";
     setDataValue = "";
   }
 
+//  if(wifiSSIDWasSet && wifiPwdWasSet)
+//    digitalWrite(1, 1);
+
+  while ((status != WL_CONNECTED) && wifiSSIDWasSet && wifiPwdWasSet) 
+  {
+      status = WiFi.begin(wifiSSIDValue.c_str(), wifiPwdValue.c_str());
+
+      delay(2000);
+
+      wifiConnectAttempt++;       
+      if(wifiConnectAttempt > maxWifiConnectAttempts)
+      {
+        digitalWrite(6, 1);
+        break;
+      }
+  }
+
+  digitalWrite(1, 1);
   
   // put your main code here, to run repeatedly:
 
