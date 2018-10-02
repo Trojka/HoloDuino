@@ -30,8 +30,9 @@ public partial class ShowTemperature : MonoBehaviour {
         //await TimeSpan.FromSeconds(1);
 #endif
 
-        StartCoroutine(PostRequest(WebAPIEndpoint, "{\"query\":\"select * from devices\"}"));
+        //StartCoroutine(PostRequest(WebAPIEndpoint, "{\"query\":\"select * from devices\"}"));
 
+        SetParseResult();
     }
 
     IEnumerator PostRequest(string url, string json)
@@ -71,6 +72,11 @@ public partial class ShowTemperature : MonoBehaviour {
         //DeviceModel[] devices = ShowTemperature.FromJson<DeviceModel>(formattedJson);
 
         //_textToDisplay = devices[0].deviceId;
+    }
+
+    public void SetParseResult()
+    {
+        var parser = new DeviceParser();
     }
 
     // Update is called once per frame

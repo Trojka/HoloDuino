@@ -953,8 +953,15 @@
     <Compile Include="Assets\HoloToolkit-Examples\UX\Scripts\Widgets\TextMeshColorThemeWidget.cs" />
     <Compile Include="Assets\HoloToolkit-Examples\UX\Scripts\Widgets\TextureThemeWidget.cs" />
     <Compile Include="Assets\Scripts\AwaitExtensions.cs" />
+    <Compile Include="Assets\Scripts\Azure\IotHub.cs" />
+    <Compile Include="Assets\Scripts\Control\ControlFactory.cs" />
+    <Compile Include="Assets\Scripts\Control\ToggleHandler.cs" />
     <Compile Include="Assets\Scripts\EnvironmentConfiguration.cs" />
+    <Compile Include="Assets\Scripts\JsonParsers\DeviceParser.cs" />
+    <Compile Include="Assets\Scripts\JsonParsers\SystemParser.cs" />
+    <Compile Include="Assets\Scripts\JsonParsers\ToggleButtonParser.cs" />
     <Compile Include="Assets\Scripts\Model\DeviceModel.cs" />
+    <Compile Include="Assets\Scripts\Model\SubSystem.cs" />
     <Compile Include="Assets\Scripts\PanelManager.cs" />
     <Compile Include="Assets\Scripts\QRCodeReader.cs" />
     <Compile Include="Assets\Scripts\ShowTemperature.cs" />

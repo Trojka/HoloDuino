@@ -276,6 +276,10 @@ Prefab:
       propertyPath: OnHoldEvent.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 1000014001103040, guid: 1208d39814b498d47a41952deff3abd0, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1208d39814b498d47a41952deff3abd0, type: 2}
   m_IsPrefabParent: 0
@@ -381,6 +385,11 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ce4801a284bc5c3488c631dcdba665df, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &277873624 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1000011643663796, guid: ce4801a284bc5c3488c631dcdba665df,
+    type: 2}
+  m_PrefabInternal: {fileID: 277873623}
 --- !u!1001 &538884436
 Prefab:
   m_ObjectHideFlags: 0
@@ -662,9 +671,18 @@ Prefab:
       propertyPath: OnUpdateEvent.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 1000011713906408, guid: a61fbf52f79ff5b479d7c59ec56dd0bc, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a61fbf52f79ff5b479d7c59ec56dd0bc, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &1215195278 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1000011713906408, guid: a61fbf52f79ff5b479d7c59ec56dd0bc,
+    type: 2}
+  m_PrefabInternal: {fileID: 1215195277}
 --- !u!1 &1394490465
 GameObject:
   m_ObjectHideFlags: 0
@@ -744,6 +762,7 @@ GameObject:
   - component: {fileID: 1490910694}
   - component: {fileID: 1490910693}
   - component: {fileID: 1490910696}
+  - component: {fileID: 1490910697}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -853,6 +872,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ToggleObject: {fileID: 61100396}
+--- !u!114 &1490910697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1490910689}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0526f5b6fade67640ad10db21d1a65a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  toggleTemplate: {fileID: 277873624}
+  sliderTemplate: {fileID: 1215195278}
 --- !u!1 &1608546394
 GameObject:
   m_ObjectHideFlags: 0

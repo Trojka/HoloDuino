@@ -16,10 +16,10 @@ public class QRCodeReader : MonoBehaviour
             result =>
             {
                 UnityEngine.WSA.Application.InvokeOnAppThread(() =>
-            {
-                  Debug.Log("Got result " + result + " at " + DateTime.Now);
-              },
-            false);
+                {
+                    Debug.Log("Got result " + result + " at " + DateTime.Now);
+                    HandleCode(result);
+                }, false);
             },
             null);
 #endif
@@ -27,6 +27,11 @@ public class QRCodeReader : MonoBehaviour
 
     // Update is called once per frame
     void Update()
+    {
+
+    }
+
+    void HandleCode(string code)
     {
 
     }
