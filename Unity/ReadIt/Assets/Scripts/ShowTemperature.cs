@@ -76,7 +76,7 @@ public partial class ShowTemperature : MonoBehaviour {
 
     public void SetParseResult()
     {
-        var parser = new DeviceParser();
+        //var parser = new DeviceParser();
     }
 
     // Update is called once per frame

@@ -9,9 +9,7 @@ public class ControlFactory : MonoBehaviour
     public GameObject toggleTemplate;
     public GameObject sliderTemplate;
 
-    Dictionary<string, object> registeredControls = new Dictionary<string, object>();
-
-    public void CreateControlWithCode(string code)
+    public GameObject CreateControlFromCode(string code)
     {
         // get the descriptor and create the control
         // hardcoded for testing purposes:
@@ -19,10 +17,21 @@ public class ControlFactory : MonoBehaviour
         toggleDescriptor.Actions.Add(new UIAction<UIToggleEvent>(UIToggleEvent.On, "1_on"));
         toggleDescriptor.Actions.Add(new UIAction<UIToggleEvent>(UIToggleEvent.On, "1_off"));
 
-        CreateToggleButton(code, toggleDescriptor);
+        return CreateControlFromDescriptor(toggleDescriptor);
     }
 
-    public void CreateToggleButton(string code, ToggleDescriptor descriptor)
+    public GameObject CreateControlFromDescriptor(UIDescriptor descriptor)
+    {
+        switch(descriptor.UIType)
+        {
+            case UIType.Toggle:
+                return CreateToggleButton(descriptor as ToggleDescriptor);
+            default:
+                throw new System.Exception("Not supported UIType");
+        }
+    }
+
+    public GameObject CreateToggleButton(ToggleDescriptor descriptor)
     {
         var toggle = Instantiate(toggleTemplate);
         toggle.transform.position = new Vector3(0, 0, 2);
@@ -32,8 +41,6 @@ public class ControlFactory : MonoBehaviour
         var toggleHandler = new ToggleHandler();
         toggleHandler.Initialize(descriptor, toggleComponent);
 
-        registeredControls.Add(code, toggleHandler);
-
-        toggle.SetActive(true);
+        return toggle;
     }
 }

@@ -967,6 +967,7 @@
     <Compile Include="Assets\Scripts\ShowTemperature.cs" />
     <Compile Include="Assets\Scripts\ShowTemperature.Secrets.cs" />
     <Compile Include="Assets\Scripts\SimpleJSON.cs" />
+    <Compile Include="Assets\Scripts\TheApplication.cs" />
     <Compile Include="Assets\Scripts\WorldAnchors.cs" />
   </ItemGroup>
   <ItemGroup>

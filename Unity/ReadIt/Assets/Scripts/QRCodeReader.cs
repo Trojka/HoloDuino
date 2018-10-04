@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class QRCodeReader : MonoBehaviour
 {
-
     // Use this for initialization
     void Start()
     {
@@ -18,7 +17,6 @@ public class QRCodeReader : MonoBehaviour
                 UnityEngine.WSA.Application.InvokeOnAppThread(() =>
                 {
                     Debug.Log("Got result " + result + " at " + DateTime.Now);
-                    HandleCode(result);
                 }, false);
             },
             null);
@@ -31,8 +29,4 @@ public class QRCodeReader : MonoBehaviour
 
     }
 
-    void HandleCode(string code)
-    {
-
-    }
 }

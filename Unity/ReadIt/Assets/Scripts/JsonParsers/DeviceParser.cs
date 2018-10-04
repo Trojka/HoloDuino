@@ -7,39 +7,6 @@ using UnityEngine;
 
 public class DeviceParser {
 
-    string descriptor = "" +
-      "{\"systems\":{" +
-      "\"name\":\"Buttons\"," +
-      "\"count\":2," +
-      "\"sys1\":{" +
-        "\"id\":1," +
-        "\"ui\":{" +
-          "\"type\":\"toggle\"," +
-          "\"actions\":{" +
-            "\"count\":2," +
-            "\"action1\":{\"event\":\"toggleon\",\"method\":\"1_on\"}," +
-            "\"action2\":{\"event\":\"toggleoff\",\"method\":\"1_off\"}" +
-          "}" +
-        "}}," +
-      "\"sys2\":{" +
-        "\"id\":2," +
-        "\"ui\":{" +
-          "\"type\":\"toggle\"," +
-          "\"actions\":{" +
-            "\"count\":2," +
-            "\"action1\":{\"event\":\"toggleon\",\"method\":\"2_on\"}," +
-            "\"action2\":{\"event\":\"toggleoff\",\"method\":\"2_off\"}" +
-          "}" +
-        "}}" +
-      "}}";
-
-    public DeviceParser()
-    {
-        var root = JSON.Parse(descriptor);
-        //InitializeFromTag(root.AsArray[0]);
-        Initialize(root);
-    }
-
     public DeviceParser(string json)
     {
         var root = JSON.Parse(json);
