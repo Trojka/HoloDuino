@@ -954,6 +954,7 @@
     <Compile Include="Assets\HoloToolkit-Examples\UX\Scripts\Widgets\TextureThemeWidget.cs" />
     <Compile Include="Assets\Scripts\AwaitExtensions.cs" />
     <Compile Include="Assets\Scripts\Azure\IotHub.cs" />
+    <Compile Include="Assets\Scripts\Azure\IotHub.Secrets.cs" />
     <Compile Include="Assets\Scripts\Control\ControlFactory.cs" />
     <Compile Include="Assets\Scripts\Control\ToggleHandler.cs" />
     <Compile Include="Assets\Scripts\EnvironmentConfiguration.cs" />

@@ -35,44 +35,44 @@ public partial class ShowTemperature : MonoBehaviour {
         SetParseResult();
     }
 
-    IEnumerator PostRequest(string url, string json)
-    {
-        var uwr = new UnityWebRequest(url, "POST");
-        byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
-        uwr.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
-        uwr.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
-        uwr.SetRequestHeader("Authorization", WebAPIHeaderAuthorization);
-        uwr.SetRequestHeader("Content-Type", "application/json");
+    //IEnumerator PostRequest(string url, string json)
+    //{
+    //    var uwr = new UnityWebRequest(url, "POST");
+    //    byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
+    //    uwr.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
+    //    uwr.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+    //    uwr.SetRequestHeader("Authorization", WebAPIHeaderAuthorization);
+    //    uwr.SetRequestHeader("Content-Type", "application/json");
 
-        //Send the request then wait here until it returns
-        yield return uwr.SendWebRequest();
+    //    //Send the request then wait here until it returns
+    //    yield return uwr.SendWebRequest();
 
-        string result = "Waiting...";
-        if (uwr.isNetworkError)
-        {
-            result = "Error While Sending: " + uwr.error;
-        }
-        else
-        {
-            result = /*"Received: " +*/ uwr.downloadHandler.text;
-        }
+    //    string result = "Waiting...";
+    //    if (uwr.isNetworkError)
+    //    {
+    //        result = "Error While Sending: " + uwr.error;
+    //    }
+    //    else
+    //    {
+    //        result = /*"Received: " +*/ uwr.downloadHandler.text;
+    //    }
 
-        Debug.Log(result);
+    //    Debug.Log(result);
 
-        //List<DeviceModel> listOfModels = new List<DeviceModel>() { new DeviceModel() { deviceId = "dev_id" } };
-        //string jsonString = ShowTemperature.ToJson(listOfModels.ToArray());
+    //    //List<DeviceModel> listOfModels = new List<DeviceModel>() { new DeviceModel() { deviceId = "dev_id" } };
+    //    //string jsonString = ShowTemperature.ToJson(listOfModels.ToArray());
 
 
-        string formattedJson = "{\"Received\"" + result.Substring("Received".Length) + "}";
+    //    string formattedJson = "{\"Received\"" + result.Substring("Received".Length) + "}";
 
-        var N = JSON.Parse(result);
-        var cnt = N.AsArray.Count;
-        var sysCount = N.AsArray[0]["tags"]["systems"]["count"];
+    //    var N = JSON.Parse(result);
+    //    var cnt = N.AsArray.Count;
+    //    var sysCount = N.AsArray[0]["tags"]["systems"]["count"];
 
-        //DeviceModel[] devices = ShowTemperature.FromJson<DeviceModel>(formattedJson);
+    //    //DeviceModel[] devices = ShowTemperature.FromJson<DeviceModel>(formattedJson);
 
-        //_textToDisplay = devices[0].deviceId;
-    }
+    //    //_textToDisplay = devices[0].deviceId;
+    //}
 
     public void SetParseResult()
     {

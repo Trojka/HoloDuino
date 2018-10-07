@@ -5,10 +5,16 @@ using UnityEngine;
 
 public class QRCodeReader : MonoBehaviour
 {
+    public Action<string> CodeProcessor
+    {
+        get;
+        set;
+    }
+
     // Use this for initialization
     void Start()
     {
-        Debug.Log("About to start at " + DateTime.Now);
+        Debug.Log("QRCodeReader start at " + DateTime.Now);
 #if !UNITY_EDITOR
         Debug.Log("Start at " + DateTime.Now);
         MediaFrameQrProcessing.Wrappers.ZXingQrCodeScanner.ScanFirstCameraForQrCode(
@@ -17,16 +23,18 @@ public class QRCodeReader : MonoBehaviour
                 UnityEngine.WSA.Application.InvokeOnAppThread(() =>
                 {
                     Debug.Log("Got result " + result + " at " + DateTime.Now);
+                    if(CodeProcessor != null)
+                    {
+                        CodeProcessor(result);
+                    }
                 }, false);
             },
             null);
+#else
+        if (CodeProcessor != null)
+        {
+            CodeProcessor("MyCode");
+        }
 #endif
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
 }

@@ -1,8 +1,11 @@
-﻿using System.Collections;
+﻿using SimpleJSON;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class IotHub {
+public partial class IotHub {
 
     static string descriptor = "" +
       "{\"systems\":{" +
@@ -30,11 +33,26 @@ public class IotHub {
       //  "}}" +
       "}}";
 
+    static string SelectDeviceQuery = "{\"query\":\"select * from devices\"}";
 
-    public static DeviceModel GetDeviceModelForCode(string code)
+    public static IEnumerator GetDeviceModelForCode(string code, Action< DeviceModel > resultAction)
     {
+        var response = PostRequest(WebAPIEndpoint, SelectDeviceQuery);
+        yield return response;
+
+        string result = "Waiting...";
+        if (response.webRequest.isNetworkError)
+        {
+            result = "Error While Sending: " + response.webRequest.error;
+        }
+        else
+        {
+            result = /*"Received: " +*/ response.webRequest.downloadHandler.text;
+        }
+
+        Debug.Log(result);
         var parser = new DeviceParser(descriptor);
-        return parser.Device;
+        resultAction(parser.Device);
     }
 
     public static void SendMethod(string method)
@@ -42,4 +60,42 @@ public class IotHub {
         Debug.Log("sending method: " + method);
     }
 
+    static UnityWebRequestAsyncOperation PostRequest(string url, string json)
+    {
+        var uwr = new UnityWebRequest(url, "POST");
+        byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
+        uwr.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
+        uwr.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+        uwr.SetRequestHeader("Authorization", WebAPIHeaderAuthorization);
+        uwr.SetRequestHeader("Content-Type", "application/json");
+
+        //Send the request then wait here until it returns
+        return uwr.SendWebRequest();
+
+        string result = "Waiting...";
+        if (uwr.isNetworkError)
+        {
+            result = "Error While Sending: " + uwr.error;
+        }
+        else
+        {
+            result = /*"Received: " +*/ uwr.downloadHandler.text;
+        }
+
+        Debug.Log(result);
+
+        //List<DeviceModel> listOfModels = new List<DeviceModel>() { new DeviceModel() { deviceId = "dev_id" } };
+        //string jsonString = ShowTemperature.ToJson(listOfModels.ToArray());
+
+
+        string formattedJson = "{\"Received\"" + result.Substring("Received".Length) + "}";
+
+        var N = JSON.Parse(result);
+        var cnt = N.AsArray.Count;
+        var sysCount = N.AsArray[0]["tags"]["systems"]["count"];
+
+        //DeviceModel[] devices = ShowTemperature.FromJson<DeviceModel>(formattedJson);
+
+        //_textToDisplay = devices[0].deviceId;
+    }
 }
