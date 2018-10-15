@@ -382,6 +382,33 @@ GameObject:
   m_PrefabParentObject: {fileID: 1000011643663796, guid: ce4801a284bc5c3488c631dcdba665df,
     type: 2}
   m_PrefabInternal: {fileID: 277873623}
+--- !u!114 &277873625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 277873624}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eb034688bcf84b4bb52b3a3310868c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hostTransform: {fileID: 0}
+  boundingBoxPrefab: {fileID: 0}
+  manipulationMode: 2
+  rotationConstraint: 0
+  enableOneHandMovement: 1
+--- !u!114 &277873630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 277873624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 472c55176cba7204da410c3f8710d176, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &538884436
 Prefab:
   m_ObjectHideFlags: 0
@@ -932,6 +959,23 @@ MonoBehaviour:
           m_CallState: 2
       m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
+  - Keyword: start
+    Response:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1490910698}
+          m_MethodName: StartUsage
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+      m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
   IsGlobalListener: 1
   PersistentKeywords: 1
 --- !u!114 &1490910701
@@ -949,6 +993,8 @@ MonoBehaviour:
   RecognizerStart: 0
   Keywords:
   - Keyword: scan
+    KeyCode: 0
+  - Keyword: start
     KeyCode: 0
   recognitionConfidenceLevel: 1
 --- !u!1001 &1648181871

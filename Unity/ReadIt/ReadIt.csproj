@@ -956,6 +956,7 @@
     <Compile Include="Assets\Scripts\Azure\IotHub.cs" />
     <Compile Include="Assets\Scripts\Azure\IotHub.Secrets.cs" />
     <Compile Include="Assets\Scripts\Control\ControlFactory.cs" />
+    <Compile Include="Assets\Scripts\Control\ControlManager.cs" />
     <Compile Include="Assets\Scripts\Control\ToggleHandler.cs" />
     <Compile Include="Assets\Scripts\EnvironmentConfiguration.cs" />
     <Compile Include="Assets\Scripts\JsonParsers\DeviceParser.cs" />

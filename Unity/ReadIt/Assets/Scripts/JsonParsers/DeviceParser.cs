@@ -10,12 +10,12 @@ public class DeviceParser {
     public DeviceParser(string json)
     {
         var root = JSON.Parse(json);
-        Initialize(root.AsArray[0]);
+        InitializeFromTag(root.AsArray[0]);
     }
 
     public DeviceParser(JSONNode root)
     {
-        Initialize(root);
+        InitializeFromTag(root);
     }
 
     private void InitializeFromTag(JSONNode root)
@@ -36,6 +36,8 @@ public class DeviceParser {
         {
             var sysTag = string.Format("sys{0}", i);
             var systemParser = new SystemParser(root["systems"][sysTag]);
+
+            Device.SubSystems.Add(systemParser.System);
         }
 
     }

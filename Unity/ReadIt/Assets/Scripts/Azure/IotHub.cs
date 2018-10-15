@@ -51,7 +51,7 @@ public partial class IotHub {
         }
 
         Debug.Log(result);
-        var parser = new DeviceParser(descriptor);
+        var parser = new DeviceParser(result);
         resultAction(parser.Device);
     }
 

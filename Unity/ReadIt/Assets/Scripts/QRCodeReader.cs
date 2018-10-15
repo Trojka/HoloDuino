@@ -15,26 +15,26 @@ public class QRCodeReader : MonoBehaviour
     void Start()
     {
         Debug.Log("QRCodeReader start at " + DateTime.Now);
-#if !UNITY_EDITOR
-        Debug.Log("Start at " + DateTime.Now);
-        MediaFrameQrProcessing.Wrappers.ZXingQrCodeScanner.ScanFirstCameraForQrCode(
-            result =>
-            {
-                UnityEngine.WSA.Application.InvokeOnAppThread(() =>
-                {
-                    Debug.Log("Got result " + result + " at " + DateTime.Now);
-                    if(CodeProcessor != null)
-                    {
-                        CodeProcessor(result);
-                    }
-                }, false);
-            },
-            null);
-#else
+//#if !UNITY_EDITOR
+//        Debug.Log("Start at " + DateTime.Now);
+//        MediaFrameQrProcessing.Wrappers.ZXingQrCodeScanner.ScanFirstCameraForQrCode(
+//            result =>
+//            {
+//                UnityEngine.WSA.Application.InvokeOnAppThread(() =>
+//                {
+//                    Debug.Log("Got result " + result + " at " + DateTime.Now);
+//                    if(CodeProcessor != null)
+//                    {
+//                        CodeProcessor(result);
+//                    }
+//                }, false);
+//            },
+//            null);
+//#else
         if (CodeProcessor != null)
         {
             CodeProcessor("MyCode");
         }
-#endif
+//#endif
     }
 }
