@@ -47,6 +47,10 @@ public class TheApplication : MonoBehaviour {
                 };
                 _registry = JsonConvert.DeserializeObject<DeviceRegistry>(text, settings);
                 Debug.Log("Registered devices: " + _registry.Devices.Count);
+                foreach(var device in _registry.Devices)
+                {
+                    RestoreDevice(device);
+                }
             }
             else
             {
@@ -71,9 +75,15 @@ public class TheApplication : MonoBehaviour {
         {
             TypeNameHandling = TypeNameHandling.All
         };
-        var text = JsonConvert.SerializeObject(_registry, settings); //"de tekst om weg te schrijven";
+        var text = JsonConvert.SerializeObject(_registry, settings);
         byte[] data = Encoding.ASCII.GetBytes(text);
         UnityEngine.Windows.File.WriteAllBytes(RegisteryPath, data);
+    }
+
+    void RestoreDevice(DeviceModel device)
+    {
+        var deviceUI = _controlFactory.CreateControlFromDescriptor(device.SubSystems[0].UI);
+        deviceUI.SetActive(true);
     }
 
     void ProcessQRCode(string code)
