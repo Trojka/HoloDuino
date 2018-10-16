@@ -33,7 +33,7 @@ public class QRCodeReader : MonoBehaviour
 //#else
         if (CodeProcessor != null)
         {
-            CodeProcessor("MyCode");
+            CodeProcessor("087E94E8-5A0F-43A9-B20F-B17CC3CBC9C5");
         }
 //#endif
     }

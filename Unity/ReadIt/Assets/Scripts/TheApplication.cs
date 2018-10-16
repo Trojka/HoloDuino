@@ -4,6 +4,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Windows.Speech;
 using UnityEngine.XR.WSA.Input;
+using Newtonsoft.Json;
 
 public class TheApplication : MonoBehaviour {
 
@@ -15,62 +16,65 @@ public class TheApplication : MonoBehaviour {
     GestureRecognizer _gestureRecognizer;
     QRCodeReader _qrCodeReader;
 
+    DeviceRegistry _registry;
     ControlManager _configuringControlManager;
+    DeviceModel _configuringDevice;
+
+    bool _isScanning = false;
+    bool _finishedScanning = false;
+
+    string RegisteryFolder
+    {
+        get { return string.Format("{0}/readit", Application.persistentDataPath); }
+    }
+
+    string RegisteryPath
+    {
+        get { return string.Format("{0}/deviceregistry.txt", RegisteryFolder); }
+    }
 
     void FillRegisteredDevices()
     {
-        //var toggleDescriptor = new ToggleDescriptor();
-        //toggleDescriptor.Actions.Add(new UIAction<UIToggleEvent>(UIToggleEvent.On, "1_on"));
-        //toggleDescriptor.Actions.Add(new UIAction<UIToggleEvent>(UIToggleEvent.Off, "1_off"));
-
-        //registeredControls.Add("reg1", toggleDescriptor);
-
-        string path = string.Format("{0}/readit/{1}.txt", Application.persistentDataPath, "deviceregistry");
-        if (UnityEngine.Windows.File.Exists(path))
+        if (UnityEngine.Windows.File.Exists(RegisteryPath))
         {
-            byte[] data = UnityEngine.Windows.File.ReadAllBytes(path);
-            string text = Encoding.ASCII.GetString(data);
-
-
-            Debug.Log("Registered devices: " + text);
+            byte[] data = UnityEngine.Windows.File.ReadAllBytes(RegisteryPath);
+            if(data != null && data.Length > 0)
+            {
+                string text = Encoding.ASCII.GetString(data);
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.All
+                };
+                _registry = JsonConvert.DeserializeObject<DeviceRegistry>(text, settings);
+                Debug.Log("Registered devices: " + _registry.Devices.Count);
+            }
+            else
+            {
+                _registry = new DeviceRegistry();
+            }
+        }
+        else
+        {
+            _registry = new DeviceRegistry();
         }
 
     }
 
-    void RegisterDevice()
+    void RegisterDevice(DeviceModel device)
     {
-        var text = "de tekst om weg te schrijven";
-        string folder = string.Format("{0}/readit", Application.persistentDataPath);
-        string path = string.Format("{0}/readit/{1}.txt", Application.persistentDataPath, "deviceregistry");
+        _registry.Devices.Add(device);
 
+        if (!UnityEngine.Windows.Directory.Exists(RegisteryFolder))
+            UnityEngine.Windows.Directory.CreateDirectory(RegisteryFolder);
+
+        JsonSerializerSettings settings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.All
+        };
+        var text = JsonConvert.SerializeObject(_registry, settings); //"de tekst om weg te schrijven";
         byte[] data = Encoding.ASCII.GetBytes(text);
-        UnityEngine.Windows.Directory.CreateDirectory(folder);
-        UnityEngine.Windows.File.WriteAllBytes(path, data);
-
-        //UnityEngine.Windows.File.Exists();
+        UnityEngine.Windows.File.WriteAllBytes(RegisteryPath, data);
     }
-
-    //public MyObject ReadData(string filename)
-    //{
-    //    string path = string.Format("{0}/mydata/{1}.json", Application.persistentDataPath, filename);
-
-    //    byte[] data = UnityEngine.Windows.File.ReadAllBytes(path);
-    //    string json = Encoding.ASCII.GetString(data);
-
-    //    MyObject obj = JsonConvert.DeserializeObject(json);
-
-    //    return obj;
-    //}
-
-    //public void SaveData(string filename, MyObject obj)
-    //{
-    //    string path = string.Format("{0}/mydata/{1}.json", Application.persistentDataPath, filename);
-
-    //    string json = JsonConvert.SerializeObject(obj);
-    //    byte[] data = Encoding.ASCII.GetBytes(json);
-
-    //    UnityEngine.Windows.File.WriteAllBytes(path, data);
-    //}
 
     void ProcessQRCode(string code)
     {
@@ -80,8 +84,12 @@ public class TheApplication : MonoBehaviour {
             {
                 var deviceUI = _controlFactory.CreateControlFromDescriptor(d.SubSystems[0].UI);
                 deviceUI.SetActive(true);
+
+                _configuringDevice = d;
                 _configuringControlManager = deviceUI.GetComponent<ControlManager>();
                 _configuringControlManager.State = ControlManager.ConfigState.StartPlacement;
+
+                _finishedScanning = true;
             }));
         
     }
@@ -90,6 +98,7 @@ public class TheApplication : MonoBehaviour {
     {
         Debug.Log("Start QR-code scan");
         _qrCodeReader.enabled = true;
+        _isScanning = true;
     }
 
     public void StartUsage()
@@ -98,7 +107,9 @@ public class TheApplication : MonoBehaviour {
         if (_configuringControlManager != null)
         {
             _configuringControlManager.State = ControlManager.ConfigState.StopPlacement;
-            RegisterDevice();
+            RegisterDevice(_configuringDevice);
+            _isScanning = false;
+            _finishedScanning = false;
         }
     }
 
@@ -106,8 +117,10 @@ public class TheApplication : MonoBehaviour {
     {
         Debug.Log("_gesureRecognizer_Tapped");
 
-        //StartScan();
-        RegisterDevice();
+        if (!_isScanning)
+            StartScan();
+        else if (_finishedScanning)
+            StartUsage();
     }
 
     // Use this for initialization

@@ -33,11 +33,13 @@ public partial class IotHub {
       //  "}}" +
       "}}";
 
-    static string SelectDeviceQuery = "{\"query\":\"select * from devices\"}";
+    //static string SelectDeviceQuery = "{\"query\":\"select * from devices\"}";
+    static string SelectDeviceQuery = "{{\"query\":\"select * from devices where deviceid='{0}'\"}}";
 
-    public static IEnumerator GetDeviceModelForCode(string code, Action< DeviceModel > resultAction)
+    public static IEnumerator GetDeviceModelForCode(string code, Action<DeviceModel> resultAction)
     {
-        var response = PostRequest(WebAPIEndpoint, SelectDeviceQuery);
+        var qry = string.Format(SelectDeviceQuery, code);
+        var response = PostRequest(WebAPIEndpoint, qry);
         yield return response;
 
         string result = "Waiting...";
