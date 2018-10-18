@@ -84,6 +84,9 @@ public class TheApplication : MonoBehaviour {
     {
         var deviceUI = _controlFactory.CreateControlFromDescriptor(device.SubSystems[0].UI);
         deviceUI.SetActive(true);
+
+        _configuringControlManager = deviceUI.GetComponent<ControlManager>();
+        _configuringControlManager.State = ControlManager.ConfigState.Using;
     }
 
     void ProcessQRCode(string code)
@@ -97,7 +100,7 @@ public class TheApplication : MonoBehaviour {
 
                 _configuringDevice = d;
                 _configuringControlManager = deviceUI.GetComponent<ControlManager>();
-                _configuringControlManager.State = ControlManager.ConfigState.StartPlacement;
+                _configuringControlManager.State = ControlManager.ConfigState.PreparePlacement;
 
                 _finishedScanning = true;
             }));
@@ -120,6 +123,9 @@ public class TheApplication : MonoBehaviour {
             RegisterDevice(_configuringDevice);
             _isScanning = false;
             _finishedScanning = false;
+
+            _configuringControlManager = null;
+            _configuringDevice = null;
         }
     }
 
@@ -146,11 +152,11 @@ public class TheApplication : MonoBehaviour {
 
         FillRegisteredDevices();
 
-        foreach(var ctrl in registeredControls)
-        {
-            var deviceUI = _controlFactory.CreateControlFromDescriptor(ctrl.Value);
-            deviceUI.SetActive(true);
-        }
+        //foreach(var ctrl in registeredControls)
+        //{
+        //    var deviceUI = _controlFactory.CreateControlFromDescriptor(ctrl.Value);
+        //    deviceUI.SetActive(true);
+        //}
     }
 	
 	// Update is called once per frame

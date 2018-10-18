@@ -285,6 +285,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 114000010536478120, guid: ce4801a284bc5c3488c631dcdba665df,
         type: 2}
+      propertyPath: OnHoldEvent.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010536478120, guid: ce4801a284bc5c3488c631dcdba665df,
+        type: 2}
       propertyPath: OnDeselection.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -373,6 +378,41 @@ Prefab:
     - target: {fileID: 1000011643663796, guid: ce4801a284bc5c3488c631dcdba665df, type: 2}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010536478120, guid: ce4801a284bc5c3488c631dcdba665df,
+        type: 2}
+      propertyPath: DetectHold
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010536478120, guid: ce4801a284bc5c3488c631dcdba665df,
+        type: 2}
+      propertyPath: HoldTime
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010536478120, guid: ce4801a284bc5c3488c631dcdba665df,
+        type: 2}
+      propertyPath: OnHoldEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010536478120, guid: ce4801a284bc5c3488c631dcdba665df,
+        type: 2}
+      propertyPath: OnHoldEvent.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010536478120, guid: ce4801a284bc5c3488c631dcdba665df,
+        type: 2}
+      propertyPath: OnHoldEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 277873630}
+    - target: {fileID: 114000010536478120, guid: ce4801a284bc5c3488c631dcdba665df,
+        type: 2}
+      propertyPath: OnHoldEvent.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: PrepareForPlacement
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010536478120, guid: ce4801a284bc5c3488c631dcdba665df,
+        type: 2}
+      propertyPath: OnHoldEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ce4801a284bc5c3488c631dcdba665df, type: 2}

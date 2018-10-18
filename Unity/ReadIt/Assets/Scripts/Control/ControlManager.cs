@@ -9,6 +9,7 @@ public class ControlManager : MonoBehaviour {
     public enum ConfigState
     {
         None,
+        PreparePlacement,
         StartPlacement,
         Placing,
         StopPlacement,
@@ -25,27 +26,47 @@ public class ControlManager : MonoBehaviour {
         set { _state = value; }
     }
 
+    public void PrepareForPlacement()
+    {
+        Debug.Log("ControlManager.PrepareForPlacement");
+        State = ConfigState.PreparePlacement;
+    }
+
+    public void StopPlacement()
+    {
+        Debug.Log("ControlManager.PrepareForPlacement");
+        State = ConfigState.StopPlacement;
+    }
+
     // Use this for initialization
     void Start () {
         _placementComponent = this.GetComponent<TwoHandManipulatable>();
         _placementComponent.enabled = false;
         _interactivity = this.GetComponent<InteractiveToggle>();
-        _interactivity.enabled = false;
+        //_interactivity.enabled = false;
     }
 	
 	// Update is called once per frame
 	void Update () {
 		switch(_state)
         {
-            case ConfigState.StartPlacement:
+            case ConfigState.PreparePlacement:
                 _placementComponent.enabled = true;
+                _interactivity.IsEnabled = false;
+
+                State = ConfigState.StartPlacement;
+                break;
+            case ConfigState.StartPlacement:
+                _interactivity.enabled = false;
 
                 State = ConfigState.Placing;
                 break;
             case ConfigState.StopPlacement:
                 _placementComponent.enabled = false;
+                _interactivity.enabled = true;
+                _interactivity.IsEnabled = true;
 
-                State = ConfigState.Placing;
+                State = ConfigState.Using;
                 break;
         }
     }
