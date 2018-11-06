@@ -286,7 +286,7 @@ Prefab:
     - target: {fileID: 114000010536478120, guid: ce4801a284bc5c3488c631dcdba665df,
         type: 2}
       propertyPath: OnHoldEvent.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114000010536478120, guid: ce4801a284bc5c3488c631dcdba665df,
         type: 2}
@@ -965,7 +965,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1490910689}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8407c4f6eceb1cf4ab937ba160438cbd, type: 3}
   m_Name: 
@@ -999,12 +999,29 @@ MonoBehaviour:
           m_CallState: 2
       m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
-  - Keyword: start
+  - Keyword: use
     Response:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 1490910698}
           m_MethodName: StartUsage
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+      m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+  - Keyword: cancel
+    Response:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1490910698}
+          m_MethodName: CancelConfiguration
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -1034,7 +1051,9 @@ MonoBehaviour:
   Keywords:
   - Keyword: scan
     KeyCode: 0
-  - Keyword: start
+  - Keyword: use
+    KeyCode: 0
+  - Keyword: cancel
     KeyCode: 0
   recognitionConfidenceLevel: 1
 --- !u!1001 &1648181871

@@ -34,11 +34,10 @@ public class ControlManager : MonoBehaviour {
 
     public void StopPlacement()
     {
-        Debug.Log("ControlManager.PrepareForPlacement");
+        Debug.Log("ControlManager.StopPlacement");
         State = ConfigState.StopPlacement;
     }
 
-    // Use this for initialization
     void Start () {
         _placementComponent = this.GetComponent<TwoHandManipulatable>();
         _placementComponent.enabled = false;
@@ -46,7 +45,6 @@ public class ControlManager : MonoBehaviour {
         //_interactivity.enabled = false;
     }
 	
-	// Update is called once per frame
 	void Update () {
 		switch(_state)
         {

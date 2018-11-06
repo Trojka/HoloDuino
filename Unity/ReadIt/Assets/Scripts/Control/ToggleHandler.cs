@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ToggleHandler {
+    string _deviceId;
     string onSelectionMethod;
     string onDeselectionMethod;
 
-    public void Initialize(ToggleDescriptor descriptor, InteractiveToggle toggleComponent)
+    public void Initialize(string deviceId, ToggleDescriptor descriptor, InteractiveToggle toggleComponent)
     {
+        _deviceId = deviceId;
         toggleComponent.OnSelection.AddListener(this.OnSelectionHandler);
         toggleComponent.OnDeselection.AddListener(this.OnDeselectionHandler);
 
@@ -23,11 +25,11 @@ public class ToggleHandler {
 
     private void OnSelectionHandler()
     {
-        IotHub.SendMethod(onSelectionMethod);
+        IotHub.SendMethod(_deviceId, onSelectionMethod);
     }
 
     private void OnDeselectionHandler()
     {
-        IotHub.SendMethod(onDeselectionMethod);
+        IotHub.SendMethod(_deviceId, onDeselectionMethod);
     }
 }
