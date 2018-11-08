@@ -6,8 +6,9 @@
 #include <AzureIoTProtocol_MQTT.h>
 
 #include "Iot.Secrets.h"
-#include "SendToSerial.h"
-#include "SendToAzure.h"
+#include "PortToggle.h"
+//#include "SendToSerial.h"
+//#include "SendToAzure.h"
 #include "samd/sample_init.h"
 #include "DeviceConfig.h"
 
@@ -59,8 +60,10 @@ void setup() {
     digitalWrite(1, 0);
     digitalWrite(6, 0);
 
-    Serial.begin(9600);  
-    while (!Serial) ;
+    sample_init(ssid, pass);
+
+//    Serial.begin(9600);  
+//    while (!Serial) ;
 
      
 
@@ -121,6 +124,24 @@ void setup() {
 //    Serial.println("\r\nConnected to wifi");
 }
 
+// Azure IoT samples contain their own loops, so only run them once
+static bool done = false;
+void loop() {
+    if (!done)
+    {
+        // Run the sample
+        // You must set the device id, device key, IoT Hub name and IotHub suffix in
+        // iot_configs.h
+        PortToggleAction();
+        done = true;
+    }
+    else
+    {
+      delay(500);
+    }
+}
+
+
 String receivedString;
 
 bool sendDeviceId = false;
@@ -141,7 +162,7 @@ String setDataValue;
 String wifiSSIDValue;
 String wifiPwdValue;
 
-void loop() {
+void loop_hide() {
 
   if(Serial.available() > 0) {
     String data = Serial.readString();
@@ -214,11 +235,18 @@ void loop() {
 //  if(wifiSSIDWasSet && wifiPwdWasSet)
 //    digitalWrite(1, 1);
 
+  wifiConnectAttempt = 0;
   while ((status != WL_CONNECTED) && wifiSSIDWasSet && wifiPwdWasSet) 
   {
+      //digitalWrite(1, 1);
+      
       status = WiFi.begin(wifiSSIDValue.c_str(), wifiPwdValue.c_str());
 
       delay(2000);
+
+      //digitalWrite(1, 0);
+
+      //delay(2000);
 
       wifiConnectAttempt++;       
       if(wifiConnectAttempt > maxWifiConnectAttempts)
@@ -228,7 +256,7 @@ void loop() {
       }
   }
 
-  digitalWrite(1, 1);
+  //digitalWrite(1, 1);
   
   // put your main code here, to run repeatedly:
 
@@ -335,23 +363,15 @@ void loop() {
   
   
 
-//  currentTime = millis();
-//
-//  if ((currentTime - lastMeasurementTime) > SendEveryMilliSeconds)
-//  {
+  currentTime = millis();
+  if ((currentTime - lastMeasurementTime) > SendEveryMilliSeconds)
+  {
 //    CalcTemperature(&sensorValue, &voltageValue, &temperatureValue);
 //    //SendToSerial(sensorValue, voltageValue, temperatureValue);
 //    SendToAzure(sensorValue, voltageValue, temperatureValue);
-//    //SendToAzure(10, 20, 30);
-//    lastMeasurementTime = millis();
-//  }
+//    SendToAzure(10, 20, 30);
+    lastMeasurementTime = millis();
+  }
   
 }
 
-void CalcTemperature(int* sensor, float* voltage, float* temperature) {
-  *sensor = analogRead(SensorPin);
-
-  *voltage = (*sensor/1024.0) * 3.3;  // The MKR1000 board operates at 3.3V 
-
-  *temperature = (*voltage - .5) * 100;
-}

@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-void SendToAzure(int sensor, float voltage, float temperature);
+//void SendToAzure(int sensor, float voltage, float temperature);
 
 #ifdef __cplusplus
 }

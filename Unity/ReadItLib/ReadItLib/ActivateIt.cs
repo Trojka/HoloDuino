@@ -10,7 +10,7 @@ namespace ReadItLib
 {
     public partial class ActivateIt
     {
-        public static void ExecLedOn(bool onOrOff)
+        public static void ExecLedOn(string deviceId, bool onOrOff)
         {
             Windows.System.Threading.ThreadPool.RunAsync((workitem) => {
                 Address address;
@@ -31,12 +31,12 @@ namespace ReadItLib
 
                 if (cbs)
                 {
-                    string to = Fx.Format("/devices/{0}/messages/devicebound", DEVICE_ID);
+                    string to = Fx.Format("/devices/{0}/messages/devicebound", deviceId);
                     string entity = "/messages/devicebound";
 
                     SenderLink senderLink = new SenderLink(session, "sender-link", entity);
 
-                    var messageValue = Encoding.UTF8.GetBytes("{\"Name\":\"TurnLed" + (onOrOff ? "On" : "Off") + "\",\"Parameters\":{}}");
+                    var messageValue = Encoding.UTF8.GetBytes("{\"Name\":\"Toggle" + (onOrOff ? "On" : "Off") + "\",\"Parameters\":{}}");
                     Message message = new Message()
                     {
                         BodySection = new Data() { Binary = messageValue }

@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #include "AzureIoTHub.h"
-//#include "serializer_devicetwin.h"
+#include "sdk/serializer_devicetwin.h"
 #include "Iot.Secrets.h"
 
 static const char* connectionString = IOT_CONFIG_CONNECTION_STRING;
@@ -23,9 +23,9 @@ BEGIN_NAMESPACE(TempMeasurement);
 
 
 
-//DECLARE_DEVICETWIN_MODEL(LedIllumination,
-//    WITH_REPORTED_PROPERTY(bool, ledOn) /*this is a simple reported property*/
-//);
+DECLARE_DEVICETWIN_MODEL(LedIllumination,
+    WITH_REPORTED_PROPERTY(bool, ledOn) /*this is a simple reported property*/
+);
 
 END_NAMESPACE(TempMeasurement);
 
@@ -34,15 +34,15 @@ END_NAMESPACE(TempMeasurement);
 //{
 //    (void)device;
 //    (void)printf("Turning LED on.\r\n");
-//    digitalWrite(1, 1); 
+//    digitalWrite(6, 1); 
 //    return EXECUTE_COMMAND_SUCCESS;
 //}
-//
+
 //EXECUTE_COMMAND_RESULT TurnLedOff(Measurement* device)
 //{
 //    (void)device;
 //    (void)printf("Turning LED off.\r\n");
-//    digitalWrite(1, 0); 
+//    digitalWrite(6, 0); 
 //    return EXECUTE_COMMAND_SUCCESS;
 //}
 
@@ -51,7 +51,7 @@ static bool g_continueRunning;
 #define DOWORK_LOOP_NUM     100
 
 
-void sendCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* userContextCallback)
+void sendCallback_hide(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* userContextCallback)
 {
     unsigned int messageTrackingId = (unsigned int)(uintptr_t)userContextCallback;
 
@@ -93,7 +93,7 @@ void sendCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* userContextCal
 
 
 /*this function "links" IoTHub to the serialization library*/
-static IOTHUBMESSAGE_DISPOSITION_RESULT IoTHubMessage(IOTHUB_MESSAGE_HANDLE message, void* userContextCallback)
+static IOTHUBMESSAGE_DISPOSITION_RESULT IoTHubMessage_hide(IOTHUB_MESSAGE_HANDLE message, void* userContextCallback)
 {
     IOTHUBMESSAGE_DISPOSITION_RESULT result;
     const unsigned char* buffer;
@@ -127,7 +127,7 @@ static IOTHUBMESSAGE_DISPOSITION_RESULT IoTHubMessage(IOTHUB_MESSAGE_HANDLE mess
     return result;
 }
 
-static void deviceTwinCallback(DEVICE_TWIN_UPDATE_STATE update_state, const unsigned char* payLoad, size_t size, void* userContextCallback)
+static void deviceTwinCallback_hide(DEVICE_TWIN_UPDATE_STATE update_state, const unsigned char* payLoad, size_t size, void* userContextCallback)
 {
     (void)userContextCallback;
 
@@ -140,15 +140,19 @@ static void deviceTwinCallback(DEVICE_TWIN_UPDATE_STATE update_state, const unsi
     printf("\r\n");
 }
 
-static void reportedStateCallback(int status_code, void* userContextCallback)
+static void reportedStateCallback_hide(int status_code, void* userContextCallback)
 {
     (void)userContextCallback;
     printf("Device Twin reported properties update completed with result: %d\r\n", status_code);
+    if(status_code == 0)
+    {
+      digitalWrite(6, 1); 
+    }
 
     g_continueRunning = false;
 }
 
-void SendToAzure(int sensor, float voltage, float temperature) {
+void SendToAzure_hide(int sensor, float voltage, float temperature) {
 
     if (platform_init() != 0)
     {
@@ -156,8 +160,8 @@ void SendToAzure(int sensor, float voltage, float temperature) {
     }
     else
     {
-      if (serializer_init(NULL) != SERIALIZER_OK)
-      //if (SERIALIZER_REGISTER_NAMESPACE(TempMeasurement) == NULL)
+      //if (serializer_init(NULL) != SERIALIZER_OK)
+      if (SERIALIZER_REGISTER_NAMESPACE(TempMeasurement) == NULL)
       {
           printf("Failed on serializer_init\r\n");
       }
@@ -190,30 +194,42 @@ void SendToAzure(int sensor, float voltage, float temperature) {
 //              someMeasurement->Temperature = temperature;
 
               bool traceOn = true;
-              const char* reportedState = "{'ledstate': 'off'}";
-              size_t reportedStateSize = strlen(reportedState);
 
               (void)IoTHubClient_LL_SetOption(iotHubClientHandle, OPTION_LOG_TRACE, &traceOn);
 
-              (void)IoTHubClient_LL_SetDeviceTwinCallback(iotHubClientHandle, deviceTwinCallback, iotHubClientHandle);
-              (void)IoTHubClient_LL_SendReportedState(iotHubClientHandle, (const unsigned char*)reportedState, reportedStateSize, reportedStateCallback, iotHubClientHandle);
+              LedIllumination* led = IoTHubDeviceTwin_CreateLedIllumination(iotHubClientHandle);
+                if (led == NULL)
+                {
+                    printf("Failure in IoTHubDeviceTwin_CreateLedIllumination");
+                }
+                else
+                {
+                  led->ledOn = true;
+                }
+                
+//              const char* reportedState = "{'lampstatus': 'on'}";
+//              size_t reportedStateSize = strlen(reportedState);
+//
+//              (void)IoTHubClient_LL_SetDeviceTwinCallback(iotHubClientHandle, deviceTwinCallback, iotHubClientHandle);
+//              (void)IoTHubClient_LL_SendReportedState(iotHubClientHandle, (const unsigned char*)reportedState, reportedStateSize, reportedStateCallback, iotHubClientHandle);
+//
+//digitalWrite(1, 1); 
+//
+//              //g_continueRunning = true;
+//              do
+//              {
+//                  IoTHubClient_LL_DoWork(iotHubClientHandle);
+//                  ThreadAPI_Sleep(100);
+//              } while (g_continueRunning);   
+//
+//              for (size_t index = 0; index < DOWORK_LOOP_NUM; index++)
+//              {
+//                  IoTHubClient_LL_DoWork(iotHubClientHandle);
+//                  ThreadAPI_Sleep(100);
+//              }
+//              LogInfo("IoTHubClient_LL_Destroy starting");
 
-digitalWrite(1, 1); 
-
-              do
-              {
-                  IoTHubClient_LL_DoWork(iotHubClientHandle);
-                  ThreadAPI_Sleep(100);
-              } while (g_continueRunning);   
-
-              for (size_t index = 0; index < DOWORK_LOOP_NUM; index++)
-              {
-                  IoTHubClient_LL_DoWork(iotHubClientHandle);
-                  ThreadAPI_Sleep(100);
-              }
-              LogInfo("IoTHubClient_LL_Destroy starting");
-
-digitalWrite(6, 1); 
+//digitalWrite(1, 0); 
               
               {
 //                unsigned char* destination;

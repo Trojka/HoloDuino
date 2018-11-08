@@ -42,7 +42,7 @@ namespace ReadItApp
         private void Button_Start_Click(object sender, RoutedEventArgs e)
         {
                 toggle = !toggle;
-                ActivateIt.ExecLedOn(toggle);
+                ActivateIt.ExecLedOn(DeviceId, toggle);
 
 
 
