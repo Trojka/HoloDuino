@@ -6,7 +6,9 @@
 #include <AzureIoTProtocol_MQTT.h>
 
 #include "Iot.Secrets.h"
-#include "PortToggle.h"
+//#include "PortToggle.h"
+//#include "PortState.h"
+#include "ToggleLogic.h"
 //#include "SendToSerial.h"
 //#include "SendToAzure.h"
 #include "samd/sample_init.h"
@@ -129,10 +131,7 @@ static bool done = false;
 void loop() {
     if (!done)
     {
-        // Run the sample
-        // You must set the device id, device key, IoT Hub name and IotHub suffix in
-        // iot_configs.h
-        PortToggleAction();
+        DoToggleLogic();
         done = true;
     }
     else

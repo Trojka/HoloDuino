@@ -1,22 +1,11 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
 #include <stdlib.h>
 
 #include <stdio.h>
 #include <stdint.h>
 
-/* This sample uses the _LL APIs of iothub_client for example purposes.
-That does not mean that MQTT only works with the _LL APIs.
-Simply changing the using the convenience layer (functions not having _LL)
-and removing calls to _DoWork will yield the same results. */
-
 #include "AzureIoTHub.h"
-//#include "iot_configs.h"
 #include "Iot.Secrets.h"
 
-/*String containing Hostname, Device Id & Device Key in the format:             */
-/*  "HostName=<host_name>;DeviceId=<device_id>;SharedAccessKey=<device_key>"    */
 static const char* connectionString = IOT_CONFIG_CONNECTION_STRING;
 
 // Define the Model
@@ -30,22 +19,25 @@ WITH_ACTION(ToggleOff)
 END_NAMESPACE(PortToggle);
 
 static char propText[1024];
+static bool isPortOn = false;
+static bool previousIsPortOn = false;
 
 EXECUTE_COMMAND_RESULT ToggleOn(ToggleModel* device)
 {
     (void)device;
-    (void)printf("Turning led on.\r\n");
+    (void)printf("Turning port on.\r\n");
+    isPortOn = true;
     return EXECUTE_COMMAND_SUCCESS;
 }
 
 EXECUTE_COMMAND_RESULT ToggleOff(ToggleModel* device)
 {
     (void)device;
-    (void)printf("Turning led off.\r\n");
+    (void)printf("Turning port off.\r\n");
+    isPortOn = false;
     return EXECUTE_COMMAND_SUCCESS;
 }
 
-/*this function "links" IoTHub to the serialization library*/
 static IOTHUBMESSAGE_DISPOSITION_RESULT IoTHubMessage(IOTHUB_MESSAGE_HANDLE message, void* userContextCallback)
 {
     IOTHUBMESSAGE_DISPOSITION_RESULT result;
@@ -80,7 +72,32 @@ static IOTHUBMESSAGE_DISPOSITION_RESULT IoTHubMessage(IOTHUB_MESSAGE_HANDLE mess
     return result;
 }
 
-void PortToggleAction()
+
+
+static void deviceTwinCallback(DEVICE_TWIN_UPDATE_STATE update_state, const unsigned char* payLoad, size_t size, void* userContextCallback)
+{
+    (void)userContextCallback;
+
+    printf("Device Twin update received (state=%s, size=%u): \r\n", 
+        ENUM_TO_STRING(DEVICE_TWIN_UPDATE_STATE, update_state), size);
+    for (size_t n = 0; n < size; n++)
+    {
+        printf("%c", payLoad[n]);
+    }
+    printf("\r\n");
+}
+
+static void reportedStateCallback(int status_code, void* userContextCallback)
+{
+    (void)userContextCallback;
+    printf("Device Twin reported properties update completed with result: %d\r\n", status_code);
+
+    //g_continueRunning = false;
+}
+
+
+
+void DoToggleLogic()
 {
     if (platform_init() != 0)
     {
@@ -128,9 +145,34 @@ void PortToggleAction()
                     }
                     else
                     {
+                        bool traceOn = true;
+
+                        (void)IoTHubClient_LL_SetOption(iotHubClientHandle, OPTION_LOG_TRACE, &traceOn);
+                        (void)IoTHubClient_LL_SetDeviceTwinCallback(iotHubClientHandle, deviceTwinCallback, iotHubClientHandle);
+
                         /* wait for commands */
                         while (1)
                         {
+
+                              if(previousIsPortOn != isPortOn)
+                              {
+                                if(isPortOn)
+                                {
+                                    printf("setting port on in devicetwin");
+                                    const char* reportedState = "{ 'toggle_state': 'on'}";
+                                    size_t reportedStateSize = strlen(reportedState);
+                                    (void)IoTHubClient_LL_SendReportedState(iotHubClientHandle, (const unsigned char*)reportedState, reportedStateSize, reportedStateCallback, iotHubClientHandle);
+                                }
+                                else
+                                {
+                                    printf("setting port off in devicetwin");
+                                    const char* reportedState = "{ 'toggle_state': 'off'}";
+                                    size_t reportedStateSize = strlen(reportedState);
+                                    (void)IoTHubClient_LL_SendReportedState(iotHubClientHandle, (const unsigned char*)reportedState, reportedStateSize, reportedStateCallback, iotHubClientHandle);
+                                }
+                                
+                                previousIsPortOn = isPortOn;
+                            }
                             IoTHubClient_LL_DoWork(iotHubClientHandle);
                             ThreadAPI_Sleep(100);
                         }
