@@ -6,11 +6,7 @@
 #include <AzureIoTProtocol_MQTT.h>
 
 #include "Iot.Secrets.h"
-//#include "PortToggle.h"
-//#include "PortState.h"
 #include "ToggleLogic.h"
-//#include "SendToSerial.h"
-//#include "SendToAzure.h"
 #include "samd/sample_init.h"
 #include "DeviceConfig.h"
 
