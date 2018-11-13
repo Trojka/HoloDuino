@@ -25,7 +25,8 @@ static bool previousIsPortOn = false;
 EXECUTE_COMMAND_RESULT ToggleOn(ToggleModel* device)
 {
     (void)device;
-    (void)printf("Turning port on.\r\n");
+    //(void)printf("Turning port on.\r\n");
+    digitalWrite(1, 1);
     isPortOn = true;
     return EXECUTE_COMMAND_SUCCESS;
 }
@@ -33,7 +34,8 @@ EXECUTE_COMMAND_RESULT ToggleOn(ToggleModel* device)
 EXECUTE_COMMAND_RESULT ToggleOff(ToggleModel* device)
 {
     (void)device;
-    (void)printf("Turning port off.\r\n");
+    //(void)printf("Turning port off.\r\n");
+    digitalWrite(1, 0);
     isPortOn = false;
     return EXECUTE_COMMAND_SUCCESS;
 }
@@ -101,6 +103,7 @@ void DoToggleLogic()
 {
     if (platform_init() != 0)
     {
+      digitalWrite(6, 1);
         (void)printf("Failed to initialize platform.\r\n");
     }
     else
@@ -145,6 +148,7 @@ void DoToggleLogic()
                     }
                     else
                     {
+                      
                         bool traceOn = true;
 
                         (void)IoTHubClient_LL_SetOption(iotHubClientHandle, OPTION_LOG_TRACE, &traceOn);

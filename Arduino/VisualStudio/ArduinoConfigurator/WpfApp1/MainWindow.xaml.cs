@@ -70,6 +70,18 @@ namespace WpfApp1
             var wifiPWDWriter = new WifiPWDWriter();
             wifiPWDWriter.SetData(port, TxtWifiPwd.Text);
 
+
+            byte[] buffer = new byte[80];
+            while (true)
+            {
+                await port.BaseStream.ReadAsync(buffer, 0, 80);
+                string receivedData = port.Encoding.GetString(buffer);
+
+                Debug.WriteLine(receivedData);
+            }
+
+
+
             port.Close();
 
             //var manager = new DeviceRegistrar(IoTHubConnectionString);

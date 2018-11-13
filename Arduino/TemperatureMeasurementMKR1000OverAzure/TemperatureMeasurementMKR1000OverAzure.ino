@@ -10,6 +10,7 @@
 #include "samd/sample_init.h"
 #include "DeviceConfig.h"
 
+
 static char ssid[] = IOT_CONFIG_WIFI_SSID;
 static char pass[] = IOT_CONFIG_WIFI_PASSWORD;
 
@@ -50,6 +51,9 @@ typedef struct {
 //WifiSecrets wifiSecrets;
 //FlashStorage(_storedWifiSecrets, WifiSecrets);
 
+#define MIN_EPOCH 40 * 365 * 24 * 3600
+
+
 void setup() {
 
     pinMode(1, OUTPUT);
@@ -58,10 +62,16 @@ void setup() {
     digitalWrite(1, 0);
     digitalWrite(6, 0);
 
-    sample_init(ssid, pass);
+    //sample_init(ssid, pass);
 
-//    Serial.begin(9600);  
-//    while (!Serial) ;
+
+
+
+    
+
+
+    //Serial.begin(9600);  
+    //while (!Serial) ;
 
      
 
@@ -124,7 +134,7 @@ void setup() {
 
 // Azure IoT samples contain their own loops, so only run them once
 static bool done = false;
-void loop() {
+void loop_hide() {
     if (!done)
     {
         DoToggleLogic();
@@ -157,7 +167,7 @@ String setDataValue;
 String wifiSSIDValue;
 String wifiPwdValue;
 
-void loop_hide() {
+void loop() {
 
   if(Serial.available() > 0) {
     String data = Serial.readString();
@@ -230,9 +240,30 @@ void loop_hide() {
 //  if(wifiSSIDWasSet && wifiPwdWasSet)
 //    digitalWrite(1, 1);
 
+//if(wifiSSIDWasSet)
+//{
+//  Serial.print("SSID was set: ");
+//  Serial.println(wifiSSIDValue.c_str());
+//}
+//else
+//  Serial.println("SSID was NOT set");
+
+  
+if(wifiPwdWasSet)
+{
+  Serial.print("PWD was set: ");
+  Serial.println(wifiPwdValue.c_str());
+}
+//else
+//  Serial.println("PWD was NOT set");
+
   wifiConnectAttempt = 0;
   while ((status != WL_CONNECTED) && wifiSSIDWasSet && wifiPwdWasSet) 
   {
+
+      Serial.println("attempt to connect");
+
+    
       //digitalWrite(1, 1);
       
       status = WiFi.begin(wifiSSIDValue.c_str(), wifiPwdValue.c_str());
@@ -246,9 +277,26 @@ void loop_hide() {
       wifiConnectAttempt++;       
       if(wifiConnectAttempt > maxWifiConnectAttempts)
       {
-        digitalWrite(6, 1);
+        //digitalWrite(6, 1);
+        Serial.println("attempt to connect failed");
+        
         break;
       }
+  }
+
+  if((status == WL_CONNECTED) && wifiSSIDWasSet && wifiPwdWasSet)
+  {
+    //digitalWrite(6, 1);
+    //digitalWrite(1, 0);
+    //Serial.println("connected");
+    sample_inittime();
+    DoToggleLogic();
+  }
+  else
+  {
+    //digitalWrite(6, 0);
+    //digitalWrite(1, 1);
+    //Serial.println("not connected");
   }
 
   //digitalWrite(1, 1);
@@ -358,15 +406,15 @@ void loop_hide() {
   
   
 
-  currentTime = millis();
-  if ((currentTime - lastMeasurementTime) > SendEveryMilliSeconds)
-  {
-//    CalcTemperature(&sensorValue, &voltageValue, &temperatureValue);
-//    //SendToSerial(sensorValue, voltageValue, temperatureValue);
-//    SendToAzure(sensorValue, voltageValue, temperatureValue);
-//    SendToAzure(10, 20, 30);
-    lastMeasurementTime = millis();
-  }
+//  currentTime = millis();
+//  if ((currentTime - lastMeasurementTime) > SendEveryMilliSeconds)
+//  {
+////    CalcTemperature(&sensorValue, &voltageValue, &temperatureValue);
+////    //SendToSerial(sensorValue, voltageValue, temperatureValue);
+////    SendToAzure(sensorValue, voltageValue, temperatureValue);
+////    SendToAzure(10, 20, 30);
+//    lastMeasurementTime = millis();
+//  }
   
 }
 
