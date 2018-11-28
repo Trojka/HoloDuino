@@ -116,9 +116,9 @@ void DoToggleLogic()
         {
             IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle = IoTHubClient_LL_CreateFromConnectionString(connectionString, MQTT_Protocol);
             srand((unsigned int)time(NULL));
-            int avgWindSpeed = 10;
-            float minTemperature = 20.0;
-            float minHumidity = 60.0;
+            //int avgWindSpeed = 10;
+            //float minTemperature = 20.0;
+            //float minHumidity = 60.0;
 
             if (iotHubClientHandle == NULL)
             {
@@ -155,9 +155,14 @@ void DoToggleLogic()
                         (void)IoTHubClient_LL_SetDeviceTwinCallback(iotHubClientHandle, deviceTwinCallback, iotHubClientHandle);
 
                         /* wait for commands */
-                        while (1)
+                        bool doWork = true;
+                        while (doWork)
                         {
 
+                              if(resetButtonState == HIGH) {
+                                doWork = false;
+                              }
+                              
                               if(previousIsPortOn != isPortOn)
                               {
                                 if(isPortOn)

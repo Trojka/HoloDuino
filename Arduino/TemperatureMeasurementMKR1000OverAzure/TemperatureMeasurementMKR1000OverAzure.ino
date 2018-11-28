@@ -28,11 +28,10 @@ float voltageValue;
 float temperatureValue;
 
 
-int wifiConnectLedPin = 6;
+int wifiConnectLedPin = 1;
 int wifiConnectLedState = LOW;
-
-int serialConnectLedPin = 1;
-int serialConnectLedState = LOW;
+int wifiDisconnectLedPin = 2;
+int wifiDisconnectLedState = LOW;
 
 int receivingBlinkTimeOut = 5;
 
@@ -56,11 +55,15 @@ typedef struct {
 
 void setup() {
 
-    pinMode(1, OUTPUT);
-    pinMode(6, OUTPUT);
+    pinMode(wifiConnectLedPin, OUTPUT);
+    pinMode(wifiDisconnectLedPin, OUTPUT);
+    pinMode(resetPin, INPUT);
+    
+    pinMode(actionPin, OUTPUT);
 
-    digitalWrite(1, 0);
-    digitalWrite(6, 0);
+    //digitalWrite(1, 1);
+    //digitalWrite(2, 1);
+    //digitalWrite(6, 1);
 
     //sample_init(ssid, pass);
 
@@ -167,7 +170,16 @@ String setDataValue;
 String wifiSSIDValue;
 String wifiPwdValue;
 
+int resetButtonState = LOW;
+
 void loop() {
+
+  resetButtonState = digitalRead(resetPin); 
+  if(resetButtonState == HIGH) {
+    wifiSSIDWasSet = false;
+    wifiPwdWasSet = false;
+  }
+
 
   if(Serial.available() > 0) {
     String data = Serial.readString();
