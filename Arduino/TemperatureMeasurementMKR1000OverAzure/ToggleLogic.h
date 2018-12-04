@@ -5,10 +5,6 @@
 extern "C" {
 #endif
 
-int actionPin = 6;
-int actionState = LOW;
-int resetPin = 5;
-
 void DoToggleLogic();
 
 #ifdef __cplusplus

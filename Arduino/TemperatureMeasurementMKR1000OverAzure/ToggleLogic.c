@@ -5,6 +5,7 @@
 
 #include "AzureIoTHub.h"
 #include "Iot.Secrets.h"
+#include "Common.h"
 
 static const char* connectionString = IOT_CONFIG_CONNECTION_STRING;
 
@@ -159,7 +160,8 @@ void DoToggleLogic()
                         while (doWork)
                         {
 
-                              if(resetButtonState == HIGH) {
+                              resetButtonState = digitalRead(resetPin); 
+                              if(resetButtonState == 1) {
                                 doWork = false;
                               }
                               

@@ -9,6 +9,7 @@
 #include "ToggleLogic.h"
 #include "samd/sample_init.h"
 #include "DeviceConfig.h"
+//#include "Common.h"
 
 
 static char ssid[] = IOT_CONFIG_WIFI_SSID;
@@ -28,9 +29,9 @@ float voltageValue;
 float temperatureValue;
 
 
-int wifiConnectLedPin = 1;
+int wifiConnectLedPin = 2;
 int wifiConnectLedState = LOW;
-int wifiDisconnectLedPin = 2;
+int wifiDisconnectLedPin = 1;
 int wifiDisconnectLedState = LOW;
 
 int receivingBlinkTimeOut = 5;
@@ -50,6 +51,14 @@ typedef struct {
 //WifiSecrets wifiSecrets;
 //FlashStorage(_storedWifiSecrets, WifiSecrets);
 
+
+int actionPin = 6;
+int actionState = 0;
+
+int resetPin = 5;
+int resetButtonState = 0;
+
+
 #define MIN_EPOCH 40 * 365 * 24 * 3600
 
 
@@ -61,22 +70,12 @@ void setup() {
     
     pinMode(actionPin, OUTPUT);
 
-    //digitalWrite(1, 1);
-    //digitalWrite(2, 1);
-    //digitalWrite(6, 1);
-
-    //sample_init(ssid, pass);
+    wifiConnectAttempt = 0;
+  
 
 
-
-
+    Serial.begin(9600);  
     
-
-
-    //Serial.begin(9600);  
-    //while (!Serial) ;
-
-     
 
 //    wifiSecrets = _storedWifiSecrets.read();
 //
@@ -109,30 +108,7 @@ void setup() {
 //      digitalWrite(6, 0); 
 //    }
 
-//    pinMode(serialConnectLedPin, OUTPUT);
-//    pinMode(wifiConnectLedPin, OUTPUT);
-//    
-//    digitalWrite(serialConnectLedPin, serialConnectLedState);
-//    digitalWrite(wifiConnectLedPin, wifiConnectLedState);
 
-//    sample_init(ssid, pass);
-  
-    
-//    Serial.print("Attempting to connect to WPA SSID: ");
-//    Serial.println(ssid);
-//
-//    // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
-//    while ( status != WL_CONNECTED) 
-//    {
-//        // Connect to WPA/WPA2 network:
-//        status = WiFi.begin(ssid, pass);
-//        Serial.print("    WiFi status: ");
-//        Serial.println(status);
-//        // wait 2 seconds to try again
-//        delay(2000);
-//      }
-//
-//    Serial.println("\r\nConnected to wifi");
 }
 
 // Azure IoT samples contain their own loops, so only run them once
@@ -163,14 +139,18 @@ String WifiPWDMarker = "WIFIPWD";
 
 bool setWifiSSID = false;
 bool wifiSSIDWasSet = false;
+bool confirmSSID = false;
 bool setWifiPwd = false;
 bool wifiPwdWasSet = false;
+bool confirmPWD = false;
 
 String setDataValue;
 String wifiSSIDValue;
 String wifiPwdValue;
 
-int resetButtonState = LOW;
+int receivedDataItemFlashDuration = -1;
+int lastFlashToggle;
+bool flashState = false;
 
 void loop() {
 
@@ -233,6 +213,10 @@ void loop() {
     //digitalWrite(1, 1);
 
     wifiSSIDWasSet = true;
+    confirmSSID = true;
+    receivedDataItemFlashDuration = 800;
+    lastFlashToggle = millis();
+
     receivedString = "";
     setDataValue = "";
   }
@@ -245,6 +229,10 @@ void loop() {
     //digitalWrite(1, 1);
 
     wifiPwdWasSet = true;
+    confirmPWD = true;
+    receivedDataItemFlashDuration = 400;
+    lastFlashToggle = millis();
+    
     receivedString = "";
     setDataValue = "";
   }
@@ -252,44 +240,52 @@ void loop() {
 //  if(wifiSSIDWasSet && wifiPwdWasSet)
 //    digitalWrite(1, 1);
 
-//if(wifiSSIDWasSet)
-//{
-//  Serial.print("SSID was set: ");
-//  Serial.println(wifiSSIDValue.c_str());
-//}
+if(wifiSSIDWasSet && confirmSSID)
+{
+  //Serial.print("SSID was set: ");
+  //Serial.println(wifiSSIDValue.c_str());
+  Serial.println(WifiSSIDMarker + "CONFIRM");
+  confirmSSID = false;
+}
 //else
 //  Serial.println("SSID was NOT set");
 
   
-if(wifiPwdWasSet)
+if(wifiPwdWasSet && confirmPWD)
 {
-  Serial.print("PWD was set: ");
-  Serial.println(wifiPwdValue.c_str());
+  //Serial.print("PWD was set: ");
+  //Serial.println(wifiPwdValue.c_str());
+  Serial.println(WifiPWDMarker + "CONFIRM");
+  confirmPWD = false;
 }
 //else
 //  Serial.println("PWD was NOT set");
 
-  wifiConnectAttempt = 0;
-  while ((status != WL_CONNECTED) && wifiSSIDWasSet && wifiPwdWasSet) 
+  if(receivedDataItemFlashDuration != -1 && (millis() - lastFlashToggle > receivedDataItemFlashDuration))
   {
+    flashState = !flashState;
+    digitalWrite(wifiConnectLedPin, flashState?1:0);
+    lastFlashToggle = millis();
+  }
 
+
+  //wifiConnectAttempt = 0;
+  while (wifiSSIDWasSet && wifiPwdWasSet && (status != WL_CONNECTED) && (wifiConnectAttempt < maxWifiConnectAttempts))
+  {
+    receivedDataItemFlashDuration = -1;
       Serial.println("attempt to connect");
-
-    
-      //digitalWrite(1, 1);
-      
       status = WiFi.begin(wifiSSIDValue.c_str(), wifiPwdValue.c_str());
 
-      delay(2000);
+      delay(200);
 
-      //digitalWrite(1, 0);
-
-      //delay(2000);
+      flashState = !flashState;
+      digitalWrite(wifiConnectLedPin, flashState?1:0);
 
       wifiConnectAttempt++;       
-      if(wifiConnectAttempt > maxWifiConnectAttempts)
+      if(wifiConnectAttempt >= maxWifiConnectAttempts)
       {
-        //digitalWrite(6, 1);
+        digitalWrite(wifiConnectLedPin, 0);
+        digitalWrite(wifiDisconnectLedPin, 1);
         Serial.println("attempt to connect failed");
         
         break;
@@ -298,135 +294,14 @@ if(wifiPwdWasSet)
 
   if((status == WL_CONNECTED) && wifiSSIDWasSet && wifiPwdWasSet)
   {
-    //digitalWrite(6, 1);
-    //digitalWrite(1, 0);
-    //Serial.println("connected");
+    Serial.println("connected");
+    
+    digitalWrite(wifiConnectLedPin, 1);
+    digitalWrite(wifiDisconnectLedPin, 0);
+
     sample_inittime();
-    DoToggleLogic();
-  }
-  else
-  {
-    //digitalWrite(6, 0);
-    //digitalWrite(1, 1);
-    //Serial.println("not connected");
+    //DoToggleLogic();
   }
 
-  //digitalWrite(1, 1);
-  
-  // put your main code here, to run repeatedly:
-
-      //Serial.println("Wifi secrets valid !!!");
-      //Serial.print("SSID: ");
-      //Serial.println(wifiSecrets.ssid);
-      //Serial.print("PWD: ");
-      //Serial.println(wifiSecrets.pwd);
-
-//if(wifiSecrets.valid == true) {
-//  digitalWrite(1, 1); 
-//}
-
-
-//    char receiveVal; 
-//    String receivedString;    
-//
-//    bool receivedSomething = false;
-//    if(Serial.available() > 0)  
-//    {          
-//       receivedString = Serial.readString();
-//       int indexOfR = receivedString.indexOf("\r");
-//       receivedString.remove(indexOfR);
-//       int indexOfN = receivedString.indexOf("\n");
-//       receivedString.remove(indexOfN);
-//       receivedSomething = true;
-//
-//       if(receivedSomething && !receivedWifiNetwork && !receivedWifiPwd)
-//       {
-//          ssidString = receivedString;
-//
-//          receivedWifiNetwork = true;
-//          receivedSomething= false;
-//       }
-//
-//       if(receivedSomething && receivedWifiNetwork && !receivedWifiPwd)
-//       {
-//          passString = receivedString;
-//
-//          receivedWifiPwd = true;
-//          receivedSomething= false;
-//       }
-//       
-//       if(receivedWifiNetwork && receivedWifiPwd)      
-//          serialConnectLedState = HIGH;    
-//
-//       digitalWrite(serialConnectLedPin, serialConnectLedState); 
-//       Serial.println("Received [" + receivedString + "]");
-//       Serial.flush();
-//    }  
-//
-//
-//    while ((status != WL_CONNECTED) && receivedWifiNetwork && receivedWifiPwd) 
-//    {
-//        Serial.println("Not yet conected to WIFI");
-//        
-//        Serial.println("WiFi ntw: " + ssidString);
-//        Serial.flush();
-//
-//        Serial.println("WiFi pwd: " + passString);
-//        Serial.flush();
-//        
-//        // Connect to WPA/WPA2 network:
-//        status = WiFi.begin(ssidString.c_str(), passString.c_str());
-//        Serial.println("WiFi status: " + ((status == WL_CONNECTED) ? String("connected") : String("not connected")));
-//        Serial.flush();
-//        
-//        Serial.print("Try again...");
-//        Serial.flush();
-//
-//        // wait 2 seconds to try again
-//        delay(2000);
-//
-//
-//        wifiConnectAttempt++;
-//
-//        Serial.println("Attemp: " + String(wifiConnectAttempt));
-//        Serial.flush();
-//          
-//        if(wifiConnectAttempt > maxWifiConnectAttempts)
-//        {
-//          Serial.println("Maximum attempts for wifi connection exceeded.");
-//          Serial.flush();
-//          break;
-//        }
-//    }
-//
-//    if((status == WL_CONNECTED) && receivedWifiNetwork && receivedWifiPwd)
-//    {
-//      wifiConnectLedState = HIGH;   
-//      digitalWrite(wifiConnectLedPin, wifiConnectLedState); 
-//      IPAddress ip = WiFi.localIP();
-//      Serial.println("Conected to WIFI: " + ip);
-//      Serial.flush();
-//    }
-//    else
-//    {
-//      serialConnectLedState = LOW;  
-//      digitalWrite(serialConnectLedPin, serialConnectLedState); 
-//    }
-//      
-//        
-//    delay(50); 
-  
-  
-
-//  currentTime = millis();
-//  if ((currentTime - lastMeasurementTime) > SendEveryMilliSeconds)
-//  {
-////    CalcTemperature(&sensorValue, &voltageValue, &temperatureValue);
-////    //SendToSerial(sensorValue, voltageValue, temperatureValue);
-////    SendToAzure(sensorValue, voltageValue, temperatureValue);
-////    SendToAzure(10, 20, 30);
-//    lastMeasurementTime = millis();
-//  }
-  
 }
 

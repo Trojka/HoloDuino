@@ -56,31 +56,61 @@ namespace WpfApp1
             SerialPort port = new SerialPort(ardiuinoSerialPort, 9600); //, Parity.None, 8, StopBits.One);
             port.Open();
 
-            var deviceIdReceiver = new DeviceIdReader();
-            var deviceId = await deviceIdReceiver.GetData(port);
-            Debug.WriteLine(deviceId);
+            //var deviceIdReceiver = new DeviceIdReader();
+            //var deviceId = await deviceIdReceiver.GetData(port);
+            //Debug.WriteLine(deviceId);
 
-            var deviceDescriptionReceiver = new DeviceDescriptionReader();
-            var deviceDescription = await deviceDescriptionReceiver.GetData(port);
-            Debug.WriteLine(deviceDescription);
+            //var deviceDescriptionReceiver = new DeviceDescriptionReader();
+            //var deviceDescription = await deviceDescriptionReceiver.GetData(port);
+            //Debug.WriteLine(deviceDescription);
 
+            Debug.WriteLine("write ssid");
             var wifiSSIDWriter = new WifiSSIDWriter();
             wifiSSIDWriter.SetData(port, TxtWifiNtwrk.Text);
 
+
+            byte[] buffer = new byte[80];
+
+            string receivedSSIDConfirmation = "";
+            while (!receivedSSIDConfirmation.Contains("WIFISSIDCONFIRM"))
+            {
+                Debug.WriteLine("getting ssid confirm");
+                await port.BaseStream.ReadAsync(buffer, 0, 80);
+                string receivedData = port.Encoding.GetString(buffer);
+                Debug.WriteLine(receivedData);
+
+                receivedSSIDConfirmation = receivedSSIDConfirmation + receivedData;
+                Debug.WriteLine(receivedSSIDConfirmation);
+            }
+
+            Debug.WriteLine("write pwd");
             var wifiPWDWriter = new WifiPWDWriter();
             wifiPWDWriter.SetData(port, TxtWifiPwd.Text);
 
 
-            byte[] buffer = new byte[80];
+            //byte[] buffer = new byte[80];
+            string receivedPWDConfirmation = "";
+            while (!receivedPWDConfirmation.Contains("WIFIPWDCONFIRM"))
+            {
+                Debug.WriteLine("getting pwd confirm");
+                await port.BaseStream.ReadAsync(buffer, 0, 80);
+                string receivedData = port.Encoding.GetString(buffer);
+                Debug.WriteLine(receivedData);
+
+                receivedPWDConfirmation = receivedPWDConfirmation + receivedData;
+                Debug.WriteLine(receivedPWDConfirmation);
+            }
+
+
             while (true)
             {
                 await port.BaseStream.ReadAsync(buffer, 0, 80);
                 string receivedData = port.Encoding.GetString(buffer);
 
+                receivedPWDConfirmation = receivedPWDConfirmation + receivedData;
+
                 Debug.WriteLine(receivedData);
             }
-
-
 
             port.Close();
 
