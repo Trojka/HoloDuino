@@ -72,15 +72,15 @@ namespace WpfApp1
             byte[] buffer = new byte[80];
 
             string receivedSSIDConfirmation = "";
-            while (!receivedSSIDConfirmation.Contains("WIFISSIDCONFIRM"))
+            //while (!receivedSSIDConfirmation.Contains("WIFISSIDCONFIRM"))
             {
-                Debug.WriteLine("getting ssid confirm");
+                //Debug.WriteLine("getting ssid confirm");
                 await port.BaseStream.ReadAsync(buffer, 0, 80);
                 string receivedData = port.Encoding.GetString(buffer);
                 Debug.WriteLine(receivedData);
 
                 receivedSSIDConfirmation = receivedSSIDConfirmation + receivedData;
-                Debug.WriteLine(receivedSSIDConfirmation);
+                //Debug.WriteLine(receivedSSIDConfirmation);
             }
 
             Debug.WriteLine("write pwd");
@@ -90,15 +90,15 @@ namespace WpfApp1
 
             //byte[] buffer = new byte[80];
             string receivedPWDConfirmation = "";
-            while (!receivedPWDConfirmation.Contains("WIFIPWDCONFIRM"))
+            //while (!receivedPWDConfirmation.Contains("WIFIPWDCONFIRM"))
             {
-                Debug.WriteLine("getting pwd confirm");
+                //Debug.WriteLine("getting pwd confirm");
                 await port.BaseStream.ReadAsync(buffer, 0, 80);
                 string receivedData = port.Encoding.GetString(buffer);
                 Debug.WriteLine(receivedData);
 
                 receivedPWDConfirmation = receivedPWDConfirmation + receivedData;
-                Debug.WriteLine(receivedPWDConfirmation);
+                //Debug.WriteLine(receivedPWDConfirmation);
             }
 
 
@@ -106,9 +106,6 @@ namespace WpfApp1
             {
                 await port.BaseStream.ReadAsync(buffer, 0, 80);
                 string receivedData = port.Encoding.GetString(buffer);
-
-                receivedPWDConfirmation = receivedPWDConfirmation + receivedData;
-
                 Debug.WriteLine(receivedData);
             }
 

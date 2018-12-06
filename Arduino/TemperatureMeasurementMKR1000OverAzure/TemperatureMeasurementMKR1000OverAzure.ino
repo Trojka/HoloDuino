@@ -29,10 +29,9 @@ float voltageValue;
 float temperatureValue;
 
 
+int wifiConnectingLedPin = 3;
 int wifiConnectLedPin = 2;
-int wifiConnectLedState = LOW;
 int wifiDisconnectLedPin = 1;
-int wifiDisconnectLedState = LOW;
 
 int receivingBlinkTimeOut = 5;
 
@@ -60,22 +59,47 @@ int resetButtonState = 0;
 
 
 #define MIN_EPOCH 40 * 365 * 24 * 3600
+bool gotEpochTime = false;
 
+String receivedString;
+
+bool sendDeviceId = false;
+bool sendDeviceDescription = false;
+
+bool deviceIdWasSend = false;
+bool deviceDescriptionWasSend = false;
+
+String WifiSSIDMarker = "WIFISSID";
+String WifiPWDMarker = "WIFIPWD";
+
+bool setWifiSSID = false;
+bool wifiSSIDWasSet = false;
+bool confirmSSID = false;
+bool setWifiPwd = false;
+bool wifiPwdWasSet = false;
+bool confirmPWD = false;
+
+String setDataValue;
+String wifiSSIDValue;
+String wifiPwdValue;
 
 void setup() {
 
+    pinMode(wifiConnectingLedPin, OUTPUT);
     pinMode(wifiConnectLedPin, OUTPUT);
     pinMode(wifiDisconnectLedPin, OUTPUT);
     pinMode(resetPin, INPUT);
     
     pinMode(actionPin, OUTPUT);
 
-    wifiConnectAttempt = 0;
-  
-
+    digitalWrite(wifiConnectingLedPin, LOW);
+    digitalWrite(wifiConnectLedPin, LOW);
+    digitalWrite(wifiDisconnectLedPin, LOW);
 
     Serial.begin(9600);  
-    
+
+    wifiConnectAttempt = 0;
+    gotEpochTime = false;
 
 //    wifiSecrets = _storedWifiSecrets.read();
 //
@@ -125,41 +149,31 @@ void loop_hide() {
     }
 }
 
-
-String receivedString;
-
-bool sendDeviceId = false;
-bool sendDeviceDescription = false;
-
-bool deviceIdWasSend = false;
-bool deviceDescriptionWasSend = false;
-
-String WifiSSIDMarker = "WIFISSID";
-String WifiPWDMarker = "WIFIPWD";
-
-bool setWifiSSID = false;
-bool wifiSSIDWasSet = false;
-bool confirmSSID = false;
-bool setWifiPwd = false;
-bool wifiPwdWasSet = false;
-bool confirmPWD = false;
-
-String setDataValue;
-String wifiSSIDValue;
-String wifiPwdValue;
-
-int receivedDataItemFlashDuration = -1;
-int lastFlashToggle;
-bool flashState = false;
-
 void loop() {
 
+  Serial.println("get pin state");
   resetButtonState = digitalRead(resetPin); 
   if(resetButtonState == HIGH) {
     wifiSSIDWasSet = false;
     wifiPwdWasSet = false;
+
+    wifiSSIDValue = "";
+    wifiPwdValue = "";
+
+    WiFi.disconnect();
+    status = WL_DISCONNECTED;
+    wifiConnectAttempt = 0;
+    gotEpochTime = false;
+    
+    //Serial.println("connect data was reset");
   }
 
+  if(!wifiSSIDWasSet || !wifiPwdWasSet)
+  {
+    digitalWrite(wifiConnectingLedPin, HIGH);
+    digitalWrite(wifiConnectLedPin, LOW);
+    digitalWrite(wifiDisconnectLedPin, LOW);
+  }
 
   if(Serial.available() > 0) {
     String data = Serial.readString();
@@ -176,7 +190,6 @@ void loop() {
 
     int startOfSet = receivedString.indexOf("SET");
     if(startOfSet != -1) {
-      //digitalWrite(6, 1);   
       String command = receivedString.substring(0, startOfSet);
       if(command.indexOf(WifiSSIDMarker) != -1)
       {
@@ -193,14 +206,12 @@ void loop() {
 
   if(sendDeviceId && !deviceIdWasSend) {
     SendDeviceId();
-    //digitalWrite(1, 1);
     deviceIdWasSend = true;
     receivedString = "";
   }
 
   if(sendDeviceDescription && !deviceDescriptionWasSend) {
     SendDeviceConfig();
-    //digitalWrite(1, 1);
     deviceDescriptionWasSend = true;
     receivedString = "";
   }
@@ -213,9 +224,8 @@ void loop() {
     //digitalWrite(1, 1);
 
     wifiSSIDWasSet = true;
+    setWifiSSID = false;
     confirmSSID = true;
-    receivedDataItemFlashDuration = 800;
-    lastFlashToggle = millis();
 
     receivedString = "";
     setDataValue = "";
@@ -229,63 +239,46 @@ void loop() {
     //digitalWrite(1, 1);
 
     wifiPwdWasSet = true;
+    setWifiPwd = false;
     confirmPWD = true;
-    receivedDataItemFlashDuration = 400;
-    lastFlashToggle = millis();
     
     receivedString = "";
     setDataValue = "";
   }
 
-//  if(wifiSSIDWasSet && wifiPwdWasSet)
-//    digitalWrite(1, 1);
 
-if(wifiSSIDWasSet && confirmSSID)
-{
-  //Serial.print("SSID was set: ");
-  //Serial.println(wifiSSIDValue.c_str());
-  Serial.println(WifiSSIDMarker + "CONFIRM");
-  confirmSSID = false;
-}
-//else
-//  Serial.println("SSID was NOT set");
-
-  
-if(wifiPwdWasSet && confirmPWD)
-{
-  //Serial.print("PWD was set: ");
-  //Serial.println(wifiPwdValue.c_str());
-  Serial.println(WifiPWDMarker + "CONFIRM");
-  confirmPWD = false;
-}
-//else
-//  Serial.println("PWD was NOT set");
-
-  if(receivedDataItemFlashDuration != -1 && (millis() - lastFlashToggle > receivedDataItemFlashDuration))
+  if(wifiSSIDWasSet && confirmSSID)
   {
-    flashState = !flashState;
-    digitalWrite(wifiConnectLedPin, flashState?1:0);
-    lastFlashToggle = millis();
+    //Serial.print("SSID was set: ");
+    //Serial.println(wifiSSIDValue.c_str());
+    Serial.println(WifiSSIDMarker + "CONFIRM");
+    confirmSSID = false;
+  }
+  
+  
+    
+  if(wifiPwdWasSet && confirmPWD)
+  {
+    //Serial.print("PWD was set: ");
+    //Serial.println(wifiPwdValue.c_str());
+    Serial.println(WifiPWDMarker + "CONFIRM");
+    confirmPWD = false;
   }
 
 
-  //wifiConnectAttempt = 0;
   while (wifiSSIDWasSet && wifiPwdWasSet && (status != WL_CONNECTED) && (wifiConnectAttempt < maxWifiConnectAttempts))
   {
-    receivedDataItemFlashDuration = -1;
       Serial.println("attempt to connect");
       status = WiFi.begin(wifiSSIDValue.c_str(), wifiPwdValue.c_str());
 
       delay(200);
 
-      flashState = !flashState;
-      digitalWrite(wifiConnectLedPin, flashState?1:0);
-
       wifiConnectAttempt++;       
       if(wifiConnectAttempt >= maxWifiConnectAttempts)
       {
-        digitalWrite(wifiConnectLedPin, 0);
-        digitalWrite(wifiDisconnectLedPin, 1);
+        digitalWrite(wifiConnectingLedPin, LOW);
+        digitalWrite(wifiConnectLedPin, LOW);
+        digitalWrite(wifiDisconnectLedPin, HIGH);
         Serial.println("attempt to connect failed");
         
         break;
@@ -295,11 +288,17 @@ if(wifiPwdWasSet && confirmPWD)
   if((status == WL_CONNECTED) && wifiSSIDWasSet && wifiPwdWasSet)
   {
     Serial.println("connected");
-    
-    digitalWrite(wifiConnectLedPin, 1);
-    digitalWrite(wifiDisconnectLedPin, 0);
 
-    sample_inittime();
+    digitalWrite(wifiConnectingLedPin, LOW);
+    digitalWrite(wifiConnectLedPin, HIGH);
+    digitalWrite(wifiDisconnectLedPin, LOW);
+
+    if(!gotEpochTime)
+    {
+      sample_inittime();
+      gotEpochTime = true;
+    }
+    
     //DoToggleLogic();
   }
 

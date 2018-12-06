@@ -21,13 +21,13 @@ END_NAMESPACE(PortToggle);
 
 static char propText[1024];
 static bool isPortOn = false;
-static bool previousIsPortOn = false;
+static bool previousIsPortOn = true; // force setting the device twin on startup
 
 EXECUTE_COMMAND_RESULT ToggleOn(ToggleModel* device)
 {
     (void)device;
     //(void)printf("Turning port on.\r\n");
-    digitalWrite(1, 1);
+    digitalWrite(actionPin, 1);
     isPortOn = true;
     return EXECUTE_COMMAND_SUCCESS;
 }
@@ -36,7 +36,7 @@ EXECUTE_COMMAND_RESULT ToggleOff(ToggleModel* device)
 {
     (void)device;
     //(void)printf("Turning port off.\r\n");
-    digitalWrite(1, 0);
+    digitalWrite(actionPin, 0);
     isPortOn = false;
     return EXECUTE_COMMAND_SUCCESS;
 }
@@ -104,7 +104,6 @@ void DoToggleLogic()
 {
     if (platform_init() != 0)
     {
-      digitalWrite(6, 1);
         (void)printf("Failed to initialize platform.\r\n");
     }
     else
@@ -117,9 +116,6 @@ void DoToggleLogic()
         {
             IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle = IoTHubClient_LL_CreateFromConnectionString(connectionString, MQTT_Protocol);
             srand((unsigned int)time(NULL));
-            //int avgWindSpeed = 10;
-            //float minTemperature = 20.0;
-            //float minHumidity = 60.0;
 
             if (iotHubClientHandle == NULL)
             {
@@ -127,15 +123,6 @@ void DoToggleLogic()
             }
             else
             {
-//#ifdef SET_TRUSTED_CERT_IN_SAMPLES
-//                // For mbed add the certificate information
-//                if (IoTHubClient_LL_SetOption(iotHubClientHandle, "TrustedCerts", certificates) != IOTHUB_CLIENT_OK)
-//                {
-//                    (void)printf("failure to set option \"TrustedCerts\"\r\n");
-//                }
-//#endif // SET_TRUSTED_CERT_IN_SAMPLES
-                
-
                 ToggleModel* toggleModel = CREATE_MODEL_INSTANCE(PortToggle, ToggleModel);
                 if (toggleModel == NULL)
                 {
