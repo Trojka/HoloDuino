@@ -5,7 +5,13 @@
 extern "C" {
 #endif
 
+bool InitToggleLogic();
+
+bool DestroyToggleLogic();
+
 void DoToggleLogic();
+
+void DoToggleLogic_AllInOne();
 
 #ifdef __cplusplus
 }

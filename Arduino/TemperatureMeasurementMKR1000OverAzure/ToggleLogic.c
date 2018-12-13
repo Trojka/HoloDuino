@@ -22,6 +22,8 @@ END_NAMESPACE(PortToggle);
 static char propText[1024];
 static bool isPortOn = false;
 static bool previousIsPortOn = true; // force setting the device twin on startup
+static IOTHUB_CLIENT_LL_HANDLE g_iotHubClientHandle;
+static ToggleModel* g_toggleModel;
 
 EXECUTE_COMMAND_RESULT ToggleOn(ToggleModel* device)
 {
@@ -98,9 +100,121 @@ static void reportedStateCallback(int status_code, void* userContextCallback)
     //g_continueRunning = false;
 }
 
+#define PLATFORM_INIT_SUCCEEDED 1
+#define SERIALIZER_INIT_SUCCEEDED 2
+#define CREATEFROMCONNECTIONSTRING_SUCCEEDED 3
+#define CREATE_MODEL_INSTANCE_SUCCEEDED 4
 
+int initializationAt = 0;
+bool InitToggleLogic()
+{
+    if (platform_init() != 0)
+    {
+        (void)printf("Failed to initialize platform.\r\n");
+        return false;
+    }
+    else
+    {
+        initializationAt = PLATFORM_INIT_SUCCEEDED;
+        if (serializer_init(NULL) != SERIALIZER_OK)
+        {
+            (void)printf("Failed on serializer_init\r\n");
+            return false;
+        }
+        else
+        {
+            initializationAt = SERIALIZER_INIT_SUCCEEDED;
+            g_iotHubClientHandle = IoTHubClient_LL_CreateFromConnectionString(connectionString, MQTT_Protocol);
+
+            if (g_iotHubClientHandle == NULL)
+            {
+                (void)printf("Failed on IoTHubClient_LL_Create\r\n");
+                return false;
+            }
+            else
+            {
+                initializationAt = CREATEFROMCONNECTIONSTRING_SUCCEEDED;
+                g_toggleModel = CREATE_MODEL_INSTANCE(PortToggle, ToggleModel);
+                if (g_toggleModel == NULL)
+                {
+                    (void)printf("Failed on CREATE_MODEL_INSTANCE\r\n");
+                    return false;
+                }
+                else
+                {
+                    initializationAt = CREATE_MODEL_INSTANCE_SUCCEEDED;
+                    if (IoTHubClient_LL_SetMessageCallback(g_iotHubClientHandle, IoTHubMessage, g_toggleModel) != IOTHUB_CLIENT_OK)
+                    {
+                        printf("unable to IoTHubClient_LL_SetMessageCallback\r\n");
+                        return false;
+                    }
+                    if (IoTHubClient_LL_SetDeviceTwinCallback(g_iotHubClientHandle, deviceTwinCallback, g_iotHubClientHandle) != IOTHUB_CLIENT_OK)
+                    {
+                        printf("unable to IoTHubClient_LL_SetDeviceTwinCallback\r\n");
+                        return false;
+                    }
+                    bool traceOn = true;
+                    (void)IoTHubClient_LL_SetOption(g_iotHubClientHandle, OPTION_LOG_TRACE, &traceOn);
+
+                    return true;
+                }
+            }
+        }
+    }
+}
+
+bool DestroyToggleLogic()
+{
+    if(initializationAt >= CREATE_MODEL_INSTANCE_SUCCEEDED)
+        DESTROY_MODEL_INSTANCE(g_toggleModel);
+    
+    if(initializationAt >= CREATEFROMCONNECTIONSTRING_SUCCEEDED)
+        IoTHubClient_LL_Destroy(g_iotHubClientHandle);
+    
+    if(initializationAt >= SERIALIZER_INIT_SUCCEEDED)
+        serializer_deinit();
+    
+    if(initializationAt >= PLATFORM_INIT_SUCCEEDED)
+        platform_deinit();  
+}
 
 void DoToggleLogic()
+{
+//    /* wait for commands */
+//    bool doWork = true;
+//    while (doWork)
+//    {
+//
+//          resetButtonState = digitalRead(resetPin); 
+//          if(resetButtonState == 1) {
+//            doWork = false;
+//          }
+          
+        if(previousIsPortOn != isPortOn)
+        {
+            if(isPortOn)
+            {
+                printf("setting port on in devicetwin");
+                const char* reportedState = "{ 'toggle_state': 'on'}";
+                size_t reportedStateSize = strlen(reportedState);
+                (void)IoTHubClient_LL_SendReportedState(g_iotHubClientHandle, (const unsigned char*)reportedState, reportedStateSize, reportedStateCallback, g_iotHubClientHandle);
+            }
+            else
+            {
+                printf("setting port off in devicetwin");
+                const char* reportedState = "{ 'toggle_state': 'off'}";
+                size_t reportedStateSize = strlen(reportedState);
+                (void)IoTHubClient_LL_SendReportedState(g_iotHubClientHandle, (const unsigned char*)reportedState, reportedStateSize, reportedStateCallback, g_iotHubClientHandle);
+            }
+            
+            previousIsPortOn = isPortOn;
+        }
+        IoTHubClient_LL_DoWork(g_iotHubClientHandle);
+        ThreadAPI_Sleep(100);
+//    }  
+}
+
+void DoToggleLogic_AllInOne()
 {
     if (platform_init() != 0)
     {
@@ -115,7 +229,7 @@ void DoToggleLogic()
         else
         {
             IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle = IoTHubClient_LL_CreateFromConnectionString(connectionString, MQTT_Protocol);
-            srand((unsigned int)time(NULL));
+            //srand((unsigned int)time(NULL));
 
             if (iotHubClientHandle == NULL)
             {

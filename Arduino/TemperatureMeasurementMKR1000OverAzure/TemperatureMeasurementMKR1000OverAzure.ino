@@ -60,6 +60,7 @@ int resetButtonState = 0;
 
 #define MIN_EPOCH 40 * 365 * 24 * 3600
 bool gotEpochTime = false;
+bool toggleLogicIsInitialized = false;
 
 String receivedString;
 
@@ -100,6 +101,7 @@ void setup() {
 
     wifiConnectAttempt = 0;
     gotEpochTime = false;
+    toggleLogicIsInitialized = false;
 
 //    wifiSecrets = _storedWifiSecrets.read();
 //
@@ -154,6 +156,7 @@ void loop() {
   Serial.println("get pin state");
   resetButtonState = digitalRead(resetPin); 
   if(resetButtonState == HIGH) {
+    
     wifiSSIDWasSet = false;
     wifiPwdWasSet = false;
 
@@ -163,7 +166,14 @@ void loop() {
     WiFi.disconnect();
     status = WL_DISCONNECTED;
     wifiConnectAttempt = 0;
+
+    if(toggleLogicIsInitialized)
+    {
+        DestroyToggleLogic();
+    }
+    
     gotEpochTime = false;
+    toggleLogicIsInitialized = false;
     
     //Serial.println("connect data was reset");
   }
@@ -298,8 +308,19 @@ void loop() {
       sample_inittime();
       gotEpochTime = true;
     }
+
+    //DoToggleLogic_AllInOne();
     
-    //DoToggleLogic();
+    if(!toggleLogicIsInitialized)
+    {
+        toggleLogicIsInitialized = InitToggleLogic();
+    }
+    
+    if(toggleLogicIsInitialized)
+    {
+        DoToggleLogic();
+    }
+    
   }
 
 }
