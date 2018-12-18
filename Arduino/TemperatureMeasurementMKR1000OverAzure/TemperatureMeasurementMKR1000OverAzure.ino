@@ -47,8 +47,8 @@ typedef struct {
   char pwd[50];
 } WifiSecrets;
 
-//WifiSecrets wifiSecrets;
-//FlashStorage(_storedWifiSecrets, WifiSecrets);
+WifiSecrets wifiSecrets;
+FlashStorage(_storedWifiSecrets, WifiSecrets);
 
 
 int actionPin = 6;
@@ -103,38 +103,16 @@ void setup() {
     gotEpochTime = false;
     toggleLogicIsInitialized = false;
 
-//    wifiSecrets = _storedWifiSecrets.read();
-//
-//    if(wifiSecrets.valid == false) {
-//      //Serial.println("Wifi secrets invalid !!!");
-//      
-//      ssidString.toCharArray(wifiSecrets.ssid, 50);
-//      passString.toCharArray(wifiSecrets.pwd, 50);
-//      wifiSecrets.valid = true;
-//
-//      //_storedWifiSecrets.write(wifiSecrets);
-//
-//      //Serial.print("SSID: ");
-//      //Serial.println(wifiSecrets.ssid);
-//      //Serial.print("PWD: ");
-//      //Serial.println(wifiSecrets.pwd);
-//
-//
-//      //digitalWrite(1, 0); 
-//      digitalWrite(6, 1); 
-//    }
-//    else {
-//      //Serial.println("Wifi secrets valid !!!");
-//      //Serial.print("SSID: ");
-//      //Serial.println(wifiSecrets.ssid);
-//      //Serial.print("PWD: ");
-//      //Serial.println(wifiSecrets.pwd);
-//
-//      //digitalWrite(1, 1);
-//      digitalWrite(6, 0); 
-//    }
+    wifiSecrets = _storedWifiSecrets.read();
 
+    if(wifiSecrets.valid == true) {
+      wifiSSIDValue = wifiSecrets.ssid;
+      wifiPwdValue = wifiSecrets.pwd;
 
+      wifiSSIDWasSet = true;
+      wifiPwdWasSet = true;
+
+    }
 }
 
 // Azure IoT samples contain their own loops, so only run them once
@@ -166,6 +144,9 @@ void loop() {
     WiFi.disconnect();
     status = WL_DISCONNECTED;
     wifiConnectAttempt = 0;
+
+    wifiSecrets.valid = false;
+    _storedWifiSecrets.write(wifiSecrets);
 
     if(toggleLogicIsInitialized)
     {
@@ -256,7 +237,6 @@ void loop() {
     setDataValue = "";
   }
 
-
   if(wifiSSIDWasSet && confirmSSID)
   {
     //Serial.print("SSID was set: ");
@@ -264,8 +244,6 @@ void loop() {
     Serial.println(WifiSSIDMarker + "CONFIRM");
     confirmSSID = false;
   }
-  
-  
     
   if(wifiPwdWasSet && confirmPWD)
   {
@@ -274,7 +252,6 @@ void loop() {
     Serial.println(WifiPWDMarker + "CONFIRM");
     confirmPWD = false;
   }
-
 
   while (wifiSSIDWasSet && wifiPwdWasSet && (status != WL_CONNECTED) && (wifiConnectAttempt < maxWifiConnectAttempts))
   {
@@ -298,6 +275,24 @@ void loop() {
   if((status == WL_CONNECTED) && wifiSSIDWasSet && wifiPwdWasSet)
   {
     Serial.println("connected");
+
+    if(wifiSecrets.valid == false) {
+      //Serial.println("Wifi secrets invalid !!!");
+      
+      //wifiSSIDValue.toCharArray(wifiSecrets.ssid, 50);
+      //wifiPwdValue.toCharArray(wifiSecrets.pwd, 50);
+      sprintf(wifiSecrets.ssid, "%.49s", wifiSSIDValue.c_str());
+      sprintf(wifiSecrets.pwd, "%.49s", wifiPwdValue.c_str());
+      wifiSecrets.valid = true;
+
+      _storedWifiSecrets.write(wifiSecrets);
+
+      //Serial.print("SSID: ");
+      //Serial.println(wifiSecrets.ssid);
+      //Serial.print("PWD: ");
+      //Serial.println(wifiSecrets.pwd);
+
+    }
 
     digitalWrite(wifiConnectingLedPin, LOW);
     digitalWrite(wifiConnectLedPin, HIGH);
